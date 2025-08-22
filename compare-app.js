@@ -1,33 +1,7 @@
-// This section should be at the very top of both main-app.js and compare-app.js
-const themeToggle = document.getElementById('theme-toggle');
-
-if (localStorage.getItem('theme') === 'dark') {
-    document.body.classList.add('dark-mode');
-}
-
-themeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    if (document.body.classList.contains('dark-mode')) {
-        localStorage.setItem('theme', 'dark');
-    } else {
-        localStorage.setItem('theme', 'light');
-    }
-});
-// The rest of your specific app logic for each file goes here.
-// 
-// Add this at the top of the file
-const themeToggle = document.getElementById('theme-toggle');
-
-if (localStorage.getItem('theme') === 'dark') {
-    document.body.classList.add('dark-mode');
-}
-
-themeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    if (document.body.classList.contains('dark-mode')) {
-        localStorage.setItem('theme', 'dark');
-    } else {
-        localStorage.setItem('theme', 'light');
+// This script will check for the stored theme and apply it on page load
+document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
     }
 });
 
@@ -35,7 +9,6 @@ const referenceInput = document.getElementById('referenceImage');
 const compareInput = document.getElementById('compareImage');
 const compareButton = document.getElementById('compareButton');
 const resultsContainer = document.getElementById('results-container');
-
 const thresholdInput = document.getElementById('thresholdInput');
 const minAreaInput = document.getElementById('minAreaInput');
 const thresholdValue = document.getElementById('thresholdValue');

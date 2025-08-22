@@ -12,6 +12,8 @@ const minRatioInput = document.getElementById('minRatioInput');
 const maxRatioInput = document.getElementById('maxRatioInput');
 const minRatioValue = document.getElementById('minRatioValue');
 const maxRatioValue = document.getElementById('maxRatioValue');
+const imageContainer = document.getElementById('image-container');
+const resultsContainer = document.getElementById('results-container');
 
 let loadedImage = null;
 
@@ -25,6 +27,7 @@ imageInput.addEventListener('change', (event) => {
         reader.onload = (e) => {
             const imageDataUrl = e.target.result;
             displayImage(imageDataUrl);
+            // This is the line that makes the button appear
             scanButton.style.display = 'block';
             loadedImage = imageDataUrl;
         };
