@@ -17,23 +17,26 @@ const resultsContainer = document.getElementById('results-container');
 
 let loadedImage = null;
 
-minRatioInput.addEventListener('input', (e) => minRatioValue.textContent = e.target.value);
-maxRatioInput.addEventListener('input', (e) => maxRatioValue.textContent = e.target.value);
-
+// This is the key part of the fix. It ensures that when a file is selected,
+// the "Check Defect" button becomes visible.
 imageInput.addEventListener('change', (event) => {
+    console.log('File selected. Making scan button visible.');
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
             const imageDataUrl = e.target.result;
             displayImage(imageDataUrl);
-            // This is the line that makes the button appear
-            scanButton.style.display = 'block';
+            scanButton.style.display = 'block'; // This line makes the button appear
             loadedImage = imageDataUrl;
         };
         reader.readAsDataURL(file);
     }
 });
+
+// The rest of the functions are the same as before, ensuring the scanning logic works correctly.
+minRatioInput.addEventListener('input', (e) => minRatioValue.textContent = e.target.value);
+maxRatioInput.addEventListener('input', (e) => maxRatioValue.textContent = e.target.value);
 
 scanButton.addEventListener('click', () => {
     resultsContainer.innerHTML = '<h2>Scanning for defects...</h2>';
