@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Defect Scanner PWA</title>
+    <title>Defect Scanner - Based on Changes</title>
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="style.css">
     
@@ -11,10 +11,12 @@
 </head>
 <body>
     <div style="text-align: right; padding: 10px;">
-        <a href="help.html">How it Works</a>
+        <a href="index.html">Back to Main Menu</a>
     </div>
 
     <h1>Defect Scanner</h1>
+    <h2>Based on Changes in Image</h2>
+
     <p>Upload an image from your gallery or take a new photo to scan for defects.</p>
     
     <input type="file" id="imageInput" accept="image/*">
@@ -42,8 +44,9 @@
     <div id="image-container"></div>
     <div id="results-container"></div>
     
-    <script src="script.js"></script>
+    <script src="main-app.js"></script>
     <script>
+        // PWA service worker registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
@@ -52,6 +55,7 @@
             });
         }
         
+        // This function will run once OpenCV is loaded
         function onOpenCvReady() {
             console.log('OpenCV.js is ready.');
         }
