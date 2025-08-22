@@ -42,13 +42,13 @@ body {
 
 h1, h2, h3 {
     color: var(--text-color);
-    text-align: center;
+    text-align: left;
 }
 
-p, ul, ol {
+p, ul, ol, li {
     text-align: left;
     line-height: 1.6;
-    padding: 0 10px;
+    padding: 0;
 }
 
 button {
