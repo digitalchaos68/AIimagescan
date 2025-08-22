@@ -1,9 +1,12 @@
-const CACHE_NAME = 'defect-scanner-cache-v1';
+const CACHE_NAME = 'defect-scanner-cache-v2';
 const urlsToCache = [
     '/',
     '/index.html',
+    '/main-app.html',
+    '/main-app.js',
+    '/compare-app.html',
+    '/compare-app.js',
     '/style.css',
-    '/script.js',
     '/manifest.json',
     '/icon-192.png',
     '/icon-512.png'

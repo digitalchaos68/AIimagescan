@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defect Scanner - Compare</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="style.css">
+    
+    <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
+</head>
+<body>
+    <div style="text-align: right; padding: 10px;">
+        <a href="index.html">Back to Main Menu</a>
+    </div>
+
+    <h1>Defect Scanner</h1>
+    <h2>Compare with Reference Image</h2>
+    <p>Upload a reference image (the good one) and a comparison image (the one to check for defects).</p>
+
+    <div class="image-upload-container">
+        <label>Reference Image (Good)</label>
+        <input type="file" id="referenceImage" accept="image/*">
+    </div>
+    <div class="image-upload-container">
+        <label>Image to Compare</label>
+        <input type="file" id="compareImage" accept="image/*">
+    </div>
+
+    <button id="compareButton">Compare Images</button>
+
+    <div id="parameters" style="margin-top: 20px;">
+        <h3>Comparison Parameters</h3>
+        <div>
+            <label for="thresholdInput">Pixel Difference Threshold:</label>
+            <input type="range" id="thresholdInput" value="40" min="0" max="255" step="1">
+            <span id="thresholdValue">40</span>
+        </div>
+        <div>
+            <label for="minAreaInput">Min. Defect Area:</label>
+            <input type="number" id="minAreaInput" value="50" min="0">
+        </div>
+    </div>
+    
+    <div id="results-container"></div>
+    
+    <script src="compare-app.js"></script>
+    <script>
+        function onOpenCvReady() {
+            console.log('OpenCV.js is ready for comparison.');
+        }
+    </script>
+</body>
+</html>
