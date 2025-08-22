@@ -1,15 +1,97 @@
-#image-container img,
-#results-container canvas {
-    max-width: 90%;
-    height: auto;
-    display: block;
-    margin: 20px auto;
+:root {
+    /* Light Mode Colors */
+    --background-color: #f0f2f5;
+    --text-color: #333;
+    --card-background: #fff;
+    --border-color: #ddd;
+    --button-background: #007bff;
+    --button-text: #fff;
+    --button-hover: #0056b3;
+}
+
+body.dark-mode {
+    /* Dark Mode Colors */
+    --background-color: #121212;
+    --text-color: #e0e0e0;
+    --card-background: #1e1e1e;
+    --border-color: #333;
+    --button-background: #6200ea;
+    --button-text: #fff;
+    --button-hover: #3700b3;
 }
 
 body {
-    font-family: sans-serif;
-    text-align: center;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
     max-width: 600px;
-    margin: 0 auto;
+    margin: 40px auto;
     padding: 20px;
+    background-color: var(--card-background);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s;
+}
+
+h1, h2, h3 {
+    color: var(--text-color);
+    text-align: center;
+}
+
+p, ul, ol {
+    text-align: left;
+    line-height: 1.6;
+    padding: 0 10px;
+}
+
+button {
+    background-color: var(--button-background);
+    color: var(--button-text);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: var(--button-hover);
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.selection-container, .image-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+#image-container img,
+#results-container canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+}
+
+.toggle-container {
+    text-align: right;
+    padding: 10px;
 }

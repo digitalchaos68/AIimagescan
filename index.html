@@ -8,69 +8,91 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Defect Scanner</h1>
-    <p>Select a defect detection method to begin.</p>
+    <div class="toggle-container">
+        <button id="theme-toggle">Light/Dark Mode</button>
+    </div>
     
-    <div class="selection-container">
-        <label for="method-select">Defect Detection Method:</label>
-        <select id="method-select">
-            <option value="change" selected>1. Based on changes in image</option>
-            <option value="compare">2. Based on compare with a reference base image</option>
-        </select>
-        <button id="go-button">Go</button>
-    </div>
-
-    <div id="help-content-change" style="display: block;">
-        <hr>
-        <h2>How the Defect Scanner Works</h2>
-        <p>This app uses a smart algorithm to find potential defects by looking for changes in the image. Think of it like a detective searching for clues.</p>
-
-        <hr>
+    <div class="container">
+        <h1>Defect Scanner</h1>
+        <p>Select a defect detection method to begin.</p>
         
-        <h2>The Algorithm (in Layman's Terms)</h2>
-        <p>Our app follows a simple, 3-step process to find defects:</p>
-        <ol>
-            <li>
-                <strong>Find the Lines:</strong> The app first converts the photo to black and white. Then, it uses a special filter to find all the sharp lines, or "edges," in the image. A crack or scratch usually shows up as a very strong, distinct line.
-            </li>
-            <li>
-                <strong>Connect the Lines:</strong> It then looks at these lines and connects them into complete shapes, which we call "contours." It ignores the tiny, insignificant lines that are likely just noise.
-            </li>
-            <li>
-                <strong>Check the Shapes:</strong> Finally, the app looks at the size and shape of these detected features. It uses your settings to decide if a shape is a potential defect or just a normal part of the object.
-            </li>
-        </ol>
-        
-        <hr>
-        
-        <h2>Understanding the Parameters</h2>
-        <p>You can adjust these settings to help the app find the right defects and avoid false alarms.</p>
-        <ul>
-            <li>
-                <strong>Min. Defect Area:</strong> This is the <strong>minimum size of a defect</strong> the app will look for. If a detected shape is smaller than this value, the app will ignore it. Use a higher number to ignore tiny specks of dust or small shadows.
-            </li>
-            <li>
-                <strong>Min. & Max. Aspect Ratio:</strong> This controls the <strong>shape of the defect</strong>. The ratio compares a shape's width to its height.
-                <ul>
-                    <li>A <strong>low number</strong> (like 0.1) means you're looking for shapes that are very tall and thin (like a vertical scratch).</li>
-                    <li>A <strong>high number</strong> (like 10) means you're looking for shapes that are very wide and flat (like a horizontal crack).</li>
-                    <li>A number closer to 1 means you're looking for a shape that is more square or round.</li>
-                </ul>
-            </li>
-        </ul>
-    </div>
+        <div class="selection-container">
+            <label for="method-select">Defect Detection Method:</label>
+            <select id="method-select">
+                <option value="change" selected>1. Based on changes in image</option>
+                <option value="compare">2. Based on compare with a reference base image</option>
+            </select>
+            <button id="go-button">Go</button>
+        </div>
 
-    <div id="help-content-compare" style="display: none;">
-        <hr>
-        <h2>How the Defect Scanner Works</h2>
-        <p>This app works like a digital twin. It needs two photos: one of a perfect, reference item, and one of the item being inspected. The algorithm then lines up the two images and compares them pixel by pixel. It looks for significant differences in color and brightness between the two images. For example, if a pixel is bright red in the reference image but is dark gray in the inspection image, the app flags it. The <strong>Pixel Difference Threshold</strong> parameter controls how big this difference needs to be before it's considered a defect. Finally, the app looks for groups of these different pixels that are larger than a certain size, which is set by the <strong>Min. Defect Area</strong> parameter, and highlights them as potential defects. This method is effective for finding scratches, dents, or missing parts by comparing a faulty item to a known good one.</p>
+        <div id="help-content-change" style="display: block;">
+            <hr>
+            <h2>How the Defect Scanner Works</h2>
+            <p>This app uses a smart algorithm to find potential defects by looking for changes in the image. Think of it like a detective searching for clues.</p>
+
+            <hr>
+            
+            <h2>The Algorithm (in Layman's Terms)</h2>
+            <p>Our app follows a simple, 3-step process to find defects:</p>
+            <ol>
+                <li>
+                    <strong>Find the Lines:</strong> The app first converts the photo to black and white. Then, it uses a special filter to find all the sharp lines, or "edges," in the image. A crack or scratch usually shows up as a very strong, distinct line.
+                </li>
+                <li>
+                    <strong>Connect the Lines:</strong> It then looks at these lines and connects them into complete shapes, which we call "contours." It ignores the tiny, insignificant lines that are likely just noise.
+                </li>
+                <li>
+                    <strong>Check the Shapes:</strong> Finally, the app looks at the size and shape of these detected features. It uses your settings to decide if a shape is a potential defect or just a normal part of the object.
+                </li>
+            </ol>
+            
+            <hr>
+            
+            <h2>Understanding the Parameters</h2>
+            <p>You can adjust these settings to help the app find the right defects and avoid false alarms.</p>
+            <ul>
+                <li>
+                    <strong>Min. Defect Area:</strong> This is the <strong>minimum size of a defect</strong> the app will look for. If a detected shape is smaller than this value, the app will ignore it. Use a higher number to ignore tiny specks of dust or small shadows.
+                </li>
+                <li>
+                    <strong>Min. & Max. Aspect Ratio:</strong> This controls the <strong>shape of the defect</strong>. The ratio compares a shape's width to its height.
+                    <ul>
+                        <li>A <strong>low number</strong> (like 0.1) means you're looking for shapes that are very tall and thin (like a vertical scratch).</li>
+                        <li>A <strong>high number</strong> (like 10) means you're looking for shapes that are very wide and flat (like a horizontal crack).</li>
+                        <li>A number closer to 1 means you're looking for a shape that is more square or round.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div id="help-content-compare" style="display: none;">
+            <hr>
+            <h2>How the Defect Scanner Works</h2>
+            <p>This app works like a digital twin. It needs two photos: one of a perfect, reference item, and one of the item being inspected. The algorithm then lines up the two images and compares them pixel by pixel. It looks for significant differences in color and brightness between the two images. For example, if a pixel is bright red in the reference image but is dark gray in the inspection image, the app flags it. The <strong>Pixel Difference Threshold</strong> parameter controls how big this difference needs to be before it's considered a defect. Finally, the app looks for groups of these different pixels that are larger than a certain size, which is set by the <strong>Min. Defect Area</strong> parameter, and highlights them as potential defects. This method is effective for finding scratches, dents, or missing parts by comparing a faulty item to a known good one.</p>
+        </div>
     </div>
 
     <script>
+        // JS for UI logic
         const methodSelect = document.getElementById('method-select');
         const goButton = document.getElementById('go-button');
         const helpContentChange = document.getElementById('help-content-change');
         const helpContentCompare = document.getElementById('help-content-compare');
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // Initial state
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
 
         methodSelect.addEventListener('change', () => {
             if (methodSelect.value === 'change') {

@@ -1,9 +1,21 @@
+// Add this at the top of the file
+const themeToggle = document.getElementById('theme-toggle');
+
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+}
+
+themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+    } else {
+        localStorage.setItem('theme', 'light');
+    }
+});
+
 const imageInput = document.getElementById('imageInput');
 const scanButton = document.getElementById('scanButton');
-const imageContainer = document.getElementById('image-container');
-const resultsContainer = document.getElementById('results-container');
-
-// New parameter input fields
 const minAreaInput = document.getElementById('minAreaInput');
 const minRatioInput = document.getElementById('minRatioInput');
 const maxRatioInput = document.getElementById('maxRatioInput');
@@ -12,10 +24,8 @@ const maxRatioValue = document.getElementById('maxRatioValue');
 
 let loadedImage = null;
 
-// Display the current values of the sliders
 minRatioInput.addEventListener('input', (e) => minRatioValue.textContent = e.target.value);
 maxRatioInput.addEventListener('input', (e) => maxRatioValue.textContent = e.target.value);
-
 
 imageInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
@@ -35,12 +45,10 @@ scanButton.addEventListener('click', () => {
     resultsContainer.innerHTML = '<h2>Scanning for defects...</h2>';
     
     if (loadedImage) {
-        // Get the current values from the input fields
         const minArea = parseInt(minAreaInput.value, 10);
         const minRatio = parseFloat(minRatioInput.value);
         const maxRatio = parseFloat(maxRatioInput.value);
         
-        // Pass the parameters to the scan function
         scanForDefects(loadedImage, minArea, minRatio, maxRatio);
     } else {
         resultsContainer.innerHTML = '<h2>Please select an image first.</h2>';
@@ -55,19 +63,20 @@ function displayImage(dataUrl) {
     imageContainer.appendChild(img);
 }
 
-// ----------------------------------------------------
-// UPDATED IMAGE PROCESSING CODE WITH PARAMETERS
-// ----------------------------------------------------
 function scanForDefects(imageDataUrl, minArea, minRatio, maxRatio) {
     let img = new Image();
     img.onload = function() {
         let mat = cv.imread(img);
+        
         let grayMat = new cv.Mat();
         cv.cvtColor(mat, grayMat, cv.COLOR_RGBA2GRAY, 0);
+
         let blurMat = new cv.Mat();
         cv.GaussianBlur(grayMat, blurMat, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
+
         let edges = new cv.Mat();
         cv.Canny(blurMat, edges, 75, 150);
+
         let contours = new cv.MatVector();
         let hierarchy = new cv.Mat();
         cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
@@ -79,10 +88,10 @@ function scanForDefects(imageDataUrl, minArea, minRatio, maxRatio) {
         for (let i = 0; i < contours.size(); ++i) {
             let contour = contours.get(i);
             let area = cv.contourArea(contour);
+
             let rect = cv.boundingRect(contour);
             let aspectRatio = rect.width / rect.height;
 
-            // Use the user-defined parameters for filtering
             if (area > minArea && (aspectRatio > maxRatio || aspectRatio < minRatio)) {
                 if (area > largestArea) {
                     largestArea = area;
@@ -90,7 +99,7 @@ function scanForDefects(imageDataUrl, minArea, minRatio, maxRatio) {
                     defectFound = true;
                 }
             }
-            contour.delete();
+            contour.delete(); 
         }
 
         mat.delete();
@@ -105,7 +114,6 @@ function scanForDefects(imageDataUrl, minArea, minRatio, maxRatio) {
     img.src = imageDataUrl;
 }
 
-// ... (displayResults function remains the same) ...
 function displayResults(defectFound, coords, imageDataUrl) {
     resultsContainer.innerHTML = '';
     
