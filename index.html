@@ -6,6 +6,8 @@
     <title>Defect Scanner PWA</title>
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="style.css">
+    
+    <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
 </head>
 <body>
     <h1>Defect Scanner</h1>
@@ -13,17 +15,25 @@
     
     <input type="file" id="imageInput" accept="image/*" capture="camera">
     
-    <div id="result">
-        </div>
-
+    <button id="scanButton" style="display: none;">Check Defect</button>
+    
+    <div id="image-container"></div>
+    <div id="results-container"></div>
+    
     <script src="script.js"></script>
     <script>
+        // PWA service worker registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
                     .then(reg => console.log('Service Worker registered!', reg))
                     .catch(err => console.log('Service Worker registration failed: ', err));
             });
+        }
+        
+        // This function will run once OpenCV is loaded
+        function onOpenCvReady() {
+            console.log('OpenCV.js is ready.');
         }
     </script>
 </body>
