@@ -1,0 +1,15 @@
+#image-container img,
+#results-container canvas {
+    max-width: 90%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+}
+
+body {
+    font-family: sans-serif;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
