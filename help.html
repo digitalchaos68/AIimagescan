@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div style="text-align: right; padding: 10px;">
+        <a href="index.html">Back to Scanner</a>
+    </div>
+
+    <h1>How the Defect Scanner Works</h1>
+    <p>This app uses a smart algorithm to find potential defects by looking for changes in the image. Think of it like a detective searching for clues.</p>
+
+    <hr>
+    
+    <h2>The Algorithm (in Layman's Terms)</h2>
+    <p>Our app follows a simple, 3-step process to find defects:</p>
+    <ol>
+        <li>
+            <strong>Find the Lines:</strong> The app first converts the photo to black and white. Then, it uses a special filter to find all the sharp lines, or "edges," in the image. A crack or scratch usually shows up as a very strong, distinct line.
+        </li>
+        <li>
+            <strong>Connect the Lines:</strong> It then looks at these lines and connects them into complete shapes, which we call "contours." It ignores the tiny, insignificant lines that are likely just noise.
+        </li>
+        <li>
+            <strong>Check the Shapes:</strong> Finally, the app looks at the size and shape of these detected features. It uses your settings to decide if a shape is a potential defect or just a normal part of the object.
+        </li>
+    </ol>
+    
+    <hr>
+    
+    <h2>Understanding the Parameters</h2>
+    <p>You can adjust these settings to help the app find the right defects and avoid false alarms.</p>
+    <ul>
+        <li>
+            <strong>Min. Defect Area:</strong> This is the **minimum size of a defect** the app will look for. If a detected shape is smaller than this value, the app will ignore it. Use a higher number to ignore tiny specks of dust or small shadows.
+        </li>
+        <li>
+            <strong>Min. & Max. Aspect Ratio:</strong> This controls the **shape of the defect**. The ratio compares a shape's width to its height.
+            <ul>
+                <li>A **low number** (like 0.1) means you're looking for shapes that are very tall and thin (like a vertical scratch).</li>
+                <li>A **high number** (like 10) means you're looking for shapes that are very wide and flat (like a horizontal crack).</li>
+                <li>A number closer to 1 means you're looking for a shape that is more square or round.</li>
+            </ul>
+        </li>
+    </ul>
+
+</body>
+</html>

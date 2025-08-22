@@ -10,6 +10,10 @@
     <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
 </head>
 <body>
+    <div style="text-align: right; padding: 10px;">
+        <a href="help.html">How it Works</a>
+    </div>
+
     <h1>Defect Scanner</h1>
     <p>Upload an image from your gallery or take a new photo to scan for defects.</p>
     
@@ -40,7 +44,6 @@
     
     <script src="script.js"></script>
     <script>
-        // ... (PWA service worker registration and onOpenCvReady function) ...
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
