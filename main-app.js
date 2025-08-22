@@ -1,49 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="style.css">
-<title>Defect Scanner - Change-Based Analysis</title>
- 
-<meta name="description" content="Analyze images for defects by detecting changes and anomalies within a single image. Adjust parameters for precise results.">
-
-<meta property="og:title" content="Defect Scanner - Change-Based Analysis">
-<meta property="og:description" content="Analyze single images for defects by detecting internal changes and anomalies.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://digitalchaos68.github.io/AIimagescan/main-app.html">
-<meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/main-app-splash.jpg">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Defect Scanner - Change-Based Analysis">
-<meta name="twitter:description" content="Scan a single image for defects using a change-based AI analysis.">
-<meta name="twitter:image" content="https://digitalchaos68.github.io/AIimagescan/image/main-app-splash.jpg">
-
-<link rel="canonical" href="https://digitalchaos68.github.io/AIimagescan/main-app.html">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Defect Scanner",
-  "description": "AI-powered tool for finding defects and anomalies in a single image.",
-  "applicationCategory": "Utilities",
-  "operatingSystem": "All",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  },
-  "url": "https://digitalchaos68.github.io/AIimagescan/main-app.html",
-  "logo": "https://digitalchaos68.github.io/AIimagescan/image/logo.png"
-}
-</script>
-</script>    
-</head>
-
-
 // This script will check for the stored theme and apply it on page load
 document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('theme') === 'dark') {
@@ -142,7 +96,7 @@ function scanForDefects(imageDataUrl, minArea, minRatio, maxRatio) {
                     defectFound = true;
                 }
             }
-            contour.delete(); 
+            contour.delete();
         }
 
         mat.delete();
