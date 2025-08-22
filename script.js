@@ -3,7 +3,19 @@ const scanButton = document.getElementById('scanButton');
 const imageContainer = document.getElementById('image-container');
 const resultsContainer = document.getElementById('results-container');
 
-let loadedImage = null; // Store the image globally for reuse
+// New parameter input fields
+const minAreaInput = document.getElementById('minAreaInput');
+const minRatioInput = document.getElementById('minRatioInput');
+const maxRatioInput = document.getElementById('maxRatioInput');
+const minRatioValue = document.getElementById('minRatioValue');
+const maxRatioValue = document.getElementById('maxRatioValue');
+
+let loadedImage = null;
+
+// Display the current values of the sliders
+minRatioInput.addEventListener('input', (e) => minRatioValue.textContent = e.target.value);
+maxRatioInput.addEventListener('input', (e) => maxRatioValue.textContent = e.target.value);
+
 
 imageInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
@@ -12,8 +24,8 @@ imageInput.addEventListener('change', (event) => {
         reader.onload = (e) => {
             const imageDataUrl = e.target.result;
             displayImage(imageDataUrl);
-            scanButton.style.display = 'block'; // Show the button after an image is selected
-            loadedImage = imageDataUrl; // Store the image data
+            scanButton.style.display = 'block';
+            loadedImage = imageDataUrl;
         };
         reader.readAsDataURL(file);
     }
@@ -23,14 +35,20 @@ scanButton.addEventListener('click', () => {
     resultsContainer.innerHTML = '<h2>Scanning for defects...</h2>';
     
     if (loadedImage) {
-        scanForDefects(loadedImage);
+        // Get the current values from the input fields
+        const minArea = parseInt(minAreaInput.value, 10);
+        const minRatio = parseFloat(minRatioInput.value);
+        const maxRatio = parseFloat(maxRatioInput.value);
+        
+        // Pass the parameters to the scan function
+        scanForDefects(loadedImage, minArea, minRatio, maxRatio);
     } else {
         resultsContainer.innerHTML = '<h2>Please select an image first.</h2>';
     }
 });
 
 function displayImage(dataUrl) {
-    imageContainer.innerHTML = ''; // Clear previous image
+    imageContainer.innerHTML = '';
     const img = document.createElement('img');
     img.src = dataUrl;
     img.style.maxWidth = '100%';
@@ -38,27 +56,18 @@ function displayImage(dataUrl) {
 }
 
 // ----------------------------------------------------
-// ACTUAL IMAGE PROCESSING CODE
+// UPDATED IMAGE PROCESSING CODE WITH PARAMETERS
 // ----------------------------------------------------
-function scanForDefects(imageDataUrl) {
-    // Create an image element to get its dimensions
+function scanForDefects(imageDataUrl, minArea, minRatio, maxRatio) {
     let img = new Image();
     img.onload = function() {
-        let mat = cv.imread(img); // Read the image into an OpenCV matrix
-        
-        // Convert the image to grayscale
+        let mat = cv.imread(img);
         let grayMat = new cv.Mat();
         cv.cvtColor(mat, grayMat, cv.COLOR_RGBA2GRAY, 0);
-
-        // Apply a blur to reduce noise
         let blurMat = new cv.Mat();
         cv.GaussianBlur(grayMat, blurMat, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
-
-        // Use Canny edge detection to find potential defects (cracks, etc.)
         let edges = new cv.Mat();
         cv.Canny(blurMat, edges, 75, 150);
-
-        // Find contours (the continuous lines of pixels that form the edges)
         let contours = new cv.MatVector();
         let hierarchy = new cv.Mat();
         cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
@@ -67,27 +76,23 @@ function scanForDefects(imageDataUrl) {
         let defectCoordinates = null;
         let largestArea = 0;
 
-        // Loop through all contours to find the largest one (a likely defect)
         for (let i = 0; i < contours.size(); ++i) {
             let contour = contours.get(i);
             let area = cv.contourArea(contour);
+            let rect = cv.boundingRect(contour);
+            let aspectRatio = rect.width / rect.height;
 
-            // Filter for significant contours (e.g., larger than a minimum area)
-            if (area > 100) { 
-                // Get the bounding rectangle for this contour
-                let rect = cv.boundingRect(contour);
-                
-                // You can add more checks here, such as aspect ratio, to filter out noise
+            // Use the user-defined parameters for filtering
+            if (area > minArea && (aspectRatio > maxRatio || aspectRatio < minRatio)) {
                 if (area > largestArea) {
                     largestArea = area;
                     defectCoordinates = rect;
                     defectFound = true;
                 }
             }
-            contour.delete(); // Clean up memory
+            contour.delete();
         }
 
-        // Clean up matrices to free memory
         mat.delete();
         grayMat.delete();
         blurMat.delete();
@@ -95,18 +100,14 @@ function scanForDefects(imageDataUrl) {
         contours.delete();
         hierarchy.delete();
 
-        // Pass the results to the display function
         displayResults(defectFound, defectCoordinates, imageDataUrl);
     };
     img.src = imageDataUrl;
 }
 
-
-// ----------------------------------------------------
-// DISPLAY THE RESULTS WITH A HIGHLIGHTED AREA
-// ----------------------------------------------------
+// ... (displayResults function remains the same) ...
 function displayResults(defectFound, coords, imageDataUrl) {
-    resultsContainer.innerHTML = ''; // Clear previous results
+    resultsContainer.innerHTML = '';
     
     const originalImage = new Image();
     originalImage.src = imageDataUrl;
@@ -116,13 +117,11 @@ function displayResults(defectFound, coords, imageDataUrl) {
         canvas.height = originalImage.height;
         const ctx = canvas.getContext('2d');
         
-        // Draw the original image onto the canvas
         ctx.drawImage(originalImage, 0, 0);
 
         if (defectFound) {
             resultsContainer.innerHTML += '<h2>Defect Found!</h2>';
-            // Draw a red bounding box around the detected defect
-            ctx.strokeStyle = '#FF0000'; // Red color
+            ctx.strokeStyle = '#FF0000';
             ctx.lineWidth = 5;
             ctx.strokeRect(coords.x, coords.y, coords.width, coords.height);
         } else {
