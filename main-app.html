@@ -4,84 +4,307 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="style.css">
-
-<title>Defect Scanner - Change-Based Analysis</title>
- 
-<meta name="description" content="Analyze images for defects by detecting changes and anomalies within a single image. Adjust parameters for precise results.">
-
-<meta property="og:title" content="Defect Scanner - Change-Based Analysis">
-<meta property="og:description" content="Analyze single images for defects by detecting internal changes and anomalies.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://digitalchaos68.github.io/AIimagescan/main-app.html">
-<meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/main-app-splash.jpg">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Defect Scanner - Change-Based Analysis">
-<meta name="twitter:description" content="Scan a single image for defects using a change-based AI analysis.">
-<meta name="twitter:image" content="https://digitalchaos68.github.io/AIimagescan/image/main-app-splash.jpg">
-
-<link rel="canonical" href="https://digitalchaos68.github.io/AIimagescan/main-app.html">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Defect Scanner",
-  "description": "AI-powered tool for finding defects and anomalies in a single image.",
-  "applicationCategory": "Utilities",
-  "operatingSystem": "All",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  },
-  "url": "https://digitalchaos68.github.io/AIimagescan/main-app.html",
-  "logo": "https://digitalchaos68.github.io/AIimagescan/image/logo.png"
-}
-</script>    
-    <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
+    <title>Defect Scanner - Change-Based Analysis</title>
+    
+    <!-- SEO and Metadata -->
+    <meta name="description" content="Analyze images for defects by detecting changes and anomalies within a single image. Adjust parameters for precise results.">
+    <meta property="og:title" content="Defect Scanner - Change-Based Analysis">
+    <meta property="og:description" content="Analyze single images for defects by detecting internal changes and anomalies.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://digitalchaos68.github.io/AIimagescan/main-app.html">
+    <meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/main-app-splash.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Defect Scanner - Change-Based Analysis">
+    <meta name="twitter:description" content="Scan a single image for defects using a change-based AI analysis.">
+    <meta name="twitter:image" content="https://digitalchaos68.github.io/AIimagescan/image/main-app-splash.jpg">
+    <link rel="canonical" href="https://digitalchaos68.github.io/AIimagescan/main-app.html">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Defect Scanner",
+      "description": "AI-powered tool for finding defects and anomalies in a single image.",
+      "applicationCategory": "Utilities",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "url": "https://digitalchaos68.github.io/AIimagescan/main-app.html",
+      "logo": "https://digitalchaos68.github.io/AIimagescan/image/logo.png"
+    }
+    </script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .bg-gradient-purple-blue {
+            background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+            height: auto;
+        }
+        .file-input {
+            width: 100%;
+            text-sm text-gray-500
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-full file:border-0
+            file:text-sm file:font-semibold
+            file:bg-violet-50 file:text-violet-700
+            hover:file:bg-violet-100
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <button onclick="window.location.href='index.html'">Back to Main Menu</button>
-        <h1>Defect Scanner</h1>
-        <h2>Based on Changes in Image</h2>
-        <img src="image/main-app-splash.jpg" alt="Defect Scanner - AI Image Quality Control" style="width: 100%; height: auto; border-radius: 8px; margin: 20px 0;">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
 
-        <p>Upload an image from your gallery or take a new photo to scan for defects.</p>
+    <!-- Main Container -->
+    <div class="max-w-4xl mx-auto my-10 p-6 bg-white dark:bg-gray-800 rounded-xl card border border-gray-200 dark:border-gray-700">
+        <!-- Back Button -->
+        <button onclick="window.location.href='index.html'" class="mb-4 px-4 py-2 rounded-full text-white bg-blue-500 hover:bg-blue-600 transition-colors duration-200">
+            Back to Main Menu
+        </button>
+
+        <h1 class="text-3xl font-bold mb-2">Defect Scanner</h1>
+        <h2 class="text-xl font-medium text-gray-600 dark:text-gray-400 mb-6">Based on Changes in Image</h2>
         
-        <input type="file" id="imageInput" accept="image/*">
+        <!-- Splash Image -->
+        <img src="https://placehold.co/1200x600/667eea/ffffff?text=Defect+Scanner" alt="Defect Scanner - AI Image Quality Control" class="w-full h-auto rounded-xl mb-6">
         
-        <button id="scanButton" style="display: none;">Check Defect</button>
+        <p class="mb-4 text-center">
+            Upload an image from your gallery or take a new photo to scan for defects.
+        </p>
+
+        <!-- Image Upload Input -->
+        <input type="file" id="imageInput" accept="image/*" class="file-input">
         
-        <div id="parameters" style="margin-top: 20px;">
-            <h3>Detection Parameters</h3>
-            <div>
-                <label for="minAreaInput">Min. Defect Area:</label>
-                <input type="number" id="minAreaInput" value="500" min="0">
-            </div>
-            <div>
-                <label for="minRatioInput">Min. Aspect Ratio:</label>
-                <input type="range" id="minRatioInput" value="0.1" min="0" max="1" step="0.05">
-                <span id="minRatioValue">0.1</span>
-            </div>
-            <div>
-                <label for="maxRatioInput">Max. Aspect Ratio:</label>
-                <input type="range" id="maxRatioInput" value="10" min="1" max="20" step="0.5">
-                <span id="maxRatioValue">10</span>
+        <!-- Loading Status -->
+        <div id="loadingStatus" class="mt-4 text-center text-sm font-medium text-gray-500">
+            Loading OpenCV.js...
+        </div>
+
+        <!-- Scan Button -->
+        <button id="scanButton" disabled class="mt-4 w-full bg-blue-500 text-white font-semibold py-3 rounded-xl transition-all duration-200 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed">
+            Check Defect
+        </button>
+        
+        <!-- Detection Parameters -->
+        <div id="parameters" class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <h3 class="text-lg font-semibold mb-2">Detection Parameters</h3>
+            <div class="space-y-2">
+                <div>
+                    <label for="minAreaInput" class="block text-sm font-medium">Min. Defect Area:</label>
+                    <input type="number" id="minAreaInput" value="50" min="0" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-800">
+                </div>
+                <div>
+                    <label for="minRatioInput" class="block text-sm font-medium">Min. Aspect Ratio:</label>
+                    <input type="range" id="minRatioInput" value="0.1" min="0" max="1" step="0.05" class="mt-1 block w-full">
+                    <span id="minRatioValue" class="text-sm">0.1</span>
+                </div>
+                <div>
+                    <label for="maxRatioInput" class="block text-sm font-medium">Max. Aspect Ratio:</label>
+                    <input type="range" id="maxRatioInput" value="10" min="1" max="20" step="0.5" class="mt-1 block w-full">
+                    <span id="maxRatioValue" class="text-sm">10</span>
+                </div>
             </div>
         </div>
 
-        <div id="image-container"></div>
-        <div id="results-container"></div>
+        <!-- Image and Results Container -->
+        <div id="image-container" class="mt-6"></div>
+        <div id="results-container" class="mt-6 text-center"></div>
     </div>
     
-    <script src="main-app.js"></script>
+    <!-- This script configures the OpenCV.js module and contains the app logic -->
     <script>
-        function onOpenCvReady() {
-            console.log('OpenCV.js is ready.');
+        // Use window.Module to ensure the global Module object is configured correctly.
+        window.Module = {
+            locateFile: function(path, prefix) {
+                // Point to the local wasm file
+                if (path.endsWith('.wasm')) {
+                    return './opencv.wasm';
+                }
+                return prefix + path;
+            },
+            onRuntimeInitialized: function() {
+                // All application logic that uses OpenCV must be placed here.
+                try {
+                    if (typeof cv !== 'undefined' && cv.Mat) {
+                        console.log('OpenCV.js is ready.');
+                        document.getElementById('loadingStatus').textContent = 'OpenCV.js is ready!';
+                        document.getElementById('scanButton').disabled = false;
+                        initializeApp();
+                    } else {
+                        throw new Error("OpenCV.js global object not found.");
+                    }
+                } catch (err) {
+                    console.error('Failed to load OpenCV.js:', err);
+                    document.getElementById('loadingStatus').textContent = 'Failed to load OpenCV.js. Check console for details.';
+                }
+            }
+        };
+
+        // This function holds all the main app logic
+        function initializeApp() {
+            const imageInput = document.getElementById('imageInput');
+            const scanButton = document.getElementById('scanButton');
+            const minAreaInput = document.getElementById('minAreaInput');
+            const minRatioInput = document.getElementById('minRatioInput');
+            const maxRatioInput = document.getElementById('maxRatioInput');
+            const minRatioValue = document.getElementById('minRatioValue');
+            const maxRatioValue = document.getElementById('maxRatioValue');
+            const imageContainer = document.getElementById('image-container');
+            const resultsContainer = document.getElementById('results-container');
+            
+            let loadedImage = null;
+
+            // Update ratio values as sliders are moved
+            minRatioInput.addEventListener('input', (event) => {
+                minRatioValue.textContent = event.target.value;
+            });
+
+            maxRatioInput.addEventListener('input', (event) => {
+                maxRatioValue.textContent = event.target.value;
+            });
+            
+            // Event listeners for UI elements
+            imageInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const imageDataUrl = e.target.result;
+                        displayImage(imageDataUrl);
+                        loadedImage = imageDataUrl;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            scanButton.addEventListener('click', () => {
+                resultsContainer.innerHTML = '<h2 class="text-xl font-medium">Scanning for defects...</h2><div class="loader"></div>';
+                
+                if (loadedImage) {
+                    const minArea = parseInt(minAreaInput.value, 10);
+                    const minRatio = parseFloat(minRatioInput.value);
+                    const maxRatio = parseFloat(maxRatioInput.value);
+                    scanForDefects(loadedImage, minArea, minRatio, maxRatio);
+                } else {
+                    resultsContainer.innerHTML = '<h2 class="text-xl font-medium text-red-500">Please select an image first.</h2>';
+                }
+            });
+            
+            function displayImage(dataUrl) {
+                imageContainer.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = dataUrl;
+                img.style.maxWidth = '100%';
+                img.className = 'rounded-lg';
+                imageContainer.appendChild(img);
+            }
+
+            function scanForDefects(imageDataUrl, minArea, minRatio, maxRatio) {
+                let img = new Image();
+                img.onload = function() {
+                    try {
+                        let mat = cv.imread(img);
+                    
+                        // New Algorithm: Defect detection based on color and texture changes.
+                        // 1. Convert to HSV color space for better color-based segmentation.
+                        let hsvMat = new cv.Mat();
+                        cv.cvtColor(mat, hsvMat, cv.COLOR_RGB2HSV, 0);
+
+                        // 2. Define a color range for the defected area.
+                        let lower_hsv = new cv.Mat(mat.rows, mat.cols, mat.type(), [0, 0, 100, 0]);
+                        let upper_hsv = new cv.Mat(mat.rows, mat.cols, mat.type(), [180, 50, 200, 255]);
+                        
+                        // 3. Create a binary mask to isolate the defect based on its color.
+                        let mask = new cv.Mat();
+                        cv.inRange(hsvMat, lower_hsv, upper_hsv, mask);
+
+                        // 4. Perform morphological closing to fill small gaps in the mask.
+                        let kernel = cv.Mat.ones(5, 5, cv.CV_8U);
+                        let closedMask = new cv.Mat();
+                        cv.morphologyEx(mask, closedMask, cv.MORPH_CLOSE, kernel);
+
+                        // 5. Find contours on the processed mask.
+                        let contours = new cv.MatVector();
+                        let hierarchy = new cv.Mat();
+                        cv.findContours(closedMask, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+                        let defectFound = false;
+                        let defectRects = [];
+
+                        // 6. Filter contours based on area and aspect ratio.
+                        for (let i = 0; i < contours.size(); ++i) {
+                            let contour = contours.get(i);
+                            let area = cv.contourArea(contour);
+                            let rect = cv.boundingRect(contour);
+                            let ratio = rect.width / rect.height;
+
+                            if (area > minArea && ratio >= minRatio && ratio <= maxRatio) { 
+                                defectRects.push(rect);
+                                defectFound = true;
+                            }
+                            contour.delete(); 
+                        }
+
+                        resultsContainer.innerHTML = '';
+                        
+                        const canvas = document.createElement('canvas');
+                        canvas.width = mat.cols;
+                        canvas.height = mat.rows;
+                        cv.imshow(canvas, mat);
+
+                        if (defectFound) {
+                            resultsContainer.innerHTML += '<h2 class="text-xl font-semibold text-green-600 mb-2">Defect Found!</h2>';
+                            const ctx = canvas.getContext('2d');
+                            ctx.strokeStyle = '#FF0000';
+                            ctx.lineWidth = 5;
+
+                            defectRects.forEach(rect => {
+                                ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
+                            });
+                        } else {
+                            resultsContainer.innerHTML += '<h2 class="text-xl font-semibold text-gray-500 mb-2">No Defects Found.</h2>';
+                        }
+
+                        resultsContainer.appendChild(canvas);
+
+                        // Cleanup OpenCV Mats
+                        mat.delete(); hsvMat.delete(); mask.delete(); closedMask.delete();
+                        lower_hsv.delete(); upper_hsv.delete(); kernel.delete();
+                        contours.delete(); hierarchy.delete();
+                    } catch (err) {
+                        console.error("Error during defect scanning:", err);
+                        resultsContainer.innerHTML = `<h2 class="text-xl font-medium text-red-500">An error occurred during scanning. Check console for details.</h2>`;
+                    }
+                };
+                img.src = imageDataUrl;
+            }
         }
     </script>
+    <script async src="./opencv.min.js"></script>
 </body>
 </html>
