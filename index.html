@@ -57,6 +57,7 @@
             <select id="method-select">
                 <option value="change" selected>1. Based on changes in image</option>
                 <option value="compare">2. Based on compare with a reference base image</option>
+                <option value="opencv">3. Based on OpenCV</option>
             </select>
             <button id="go-button">Go</button>
         </div>
@@ -106,6 +107,12 @@
             <h2>How the Defect Scanner Works</h2>
             <p>This app works like a digital twin. It needs two photos: one of a perfect, reference item, and one of the item being inspected. The algorithm then lines up the two images and compares them pixel by pixel. It looks for significant differences in color and brightness between the two images. For example, if a pixel is bright red in the reference image but is dark gray in the inspection image, the app flags it. The <strong>Pixel Difference Threshold</strong> parameter controls how big this difference needs to be before it's considered a defect. Finally, the app looks for groups of these different pixels that are larger than a certain size, which is set by the <strong>Min. Defect Area</strong> parameter, and highlights them as potential defects. This method is effective for finding scratches, dents, or missing parts by comparing a faulty item to a known good one.</p>
         </div>
+        
+        <div id="help-content-opencv" style="display: none;">
+            <hr>
+            <h2>Utilizing OpenCV for Advanced Analysis</h2>
+            <p>This advanced method leverages the full power of the OpenCV library to perform more sophisticated defect analysis. Instead of just looking for simple pixel changes, it uses a multi-step computer vision pipeline to isolate and identify anomalies. This includes converting the image to different color spaces, applying morphological operations to clean up noise and fill gaps, and then finding and filtering contours based on their shape, size, and aspect ratio. This approach is highly effective for detecting a wider range of defects, from subtle scratches to complex textural irregularities, with greater precision.</p>
+        </div>
     </div>
 
     <script>
@@ -113,6 +120,7 @@
         const goButton = document.getElementById('go-button');
         const helpContentChange = document.getElementById('help-content-change');
         const helpContentCompare = document.getElementById('help-content-compare');
+        const helpContentOpenCV = document.getElementById('help-content-opencv');
         const themeToggle = document.getElementById('theme-toggle');
 
         if (localStorage.getItem('theme') === 'dark') {
@@ -129,12 +137,16 @@
         });
 
         methodSelect.addEventListener('change', () => {
+            helpContentChange.style.display = 'none';
+            helpContentCompare.style.display = 'none';
+            helpContentOpenCV.style.display = 'none';
+
             if (methodSelect.value === 'change') {
                 helpContentChange.style.display = 'block';
-                helpContentCompare.style.display = 'none';
             } else if (methodSelect.value === 'compare') {
-                helpContentChange.style.display = 'none';
                 helpContentCompare.style.display = 'block';
+            } else if (methodSelect.value === 'opencv') {
+                helpContentOpenCV.style.display = 'block';
             }
         });
 
@@ -144,6 +156,8 @@
                 window.location.href = 'main-app.html';
             } else if (selectedMethod === 'compare') {
                 window.location.href = 'compare-app.html';
+            } else if (selectedMethod === 'opencv') {
+                window.location.href = 'compare-opencv.html';
             }
         });
 
