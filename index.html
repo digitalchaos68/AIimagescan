@@ -3,171 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defect Scanner - AI Image Quality Control</title>
+    
+    <!-- Meta Data for SEO and Social Sharing -->
+    <meta name="description" content="AI-powered image defect scanner. Choose from change-based or reference-based analysis to find flaws in your images. Fast, accurate, and easy to use.">
+    <meta property="og:title" content="Defect Scanner - AI Image Quality Control">
+    <meta property="og:description" content="AI-powered image defect scanner. Choose from change-based or reference-based analysis to find flaws in your images.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://digitalchaos68.github.io/AIimagescan/index.html">
+    <meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/index-splash.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Defect Scanner - AI Image Quality Control">
+    <meta name="twitter:description" content="Find and analyze defects in images using advanced AI algorithms.">
+    <meta name="twitter:image" content="https://digitalchaos68.github.io/AIimagescan/image/index-splash.jpg">
 
-    <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="style.css">
-<title>Defect Scanner - AI Image Quality Control</title>
- 
-<meta name="description" content="AI-powered image defect scanner. Choose from change-based or reference-based analysis to find flaws in your images. Fast, accurate, and easy to use.">
-
-<meta property="og:title" content="Defect Scanner - AI Image Quality Control">
-<meta property="og:description" content="AI-powered image defect scanner. Choose from change-based or reference-based analysis to find flaws in your images.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://digitalchaos68.github.io/AIimagescan/index.html">
-<meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/index-splash.jpg">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Defect Scanner - AI Image Quality Control">
-<meta name="twitter:description" content="Find and analyze defects in images using advanced AI algorithms.">
-<meta name="twitter:image" content="https://digitalchaos68.github.io/AIimagescan/image/index-splash.jpg">
-
-<link rel="canonical" href="https://digitalchaos68.github.io/AIimagescan/index.html">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Defect Scanner",
-  "description": "AI-powered image defect scanner for quality control and anomaly detection.",
-  "applicationCategory": "Utilities",
-  "operatingSystem": "All",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  },
-  "url": "https://digitalchaos68.github.io/AIimagescan/index.html",
-  "logo": "https://digitalchaos68.github.io/AIimagescan/image/logo.png"
-}
-</script>    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+        /* Dark mode styles */
+        .dark body {
+            background-color: #1a202c;
+        }
+        .dark .bg-white {
+            background-color: #2d3748;
+        }
+        .dark .text-gray-900 {
+            color: #e2e8f0;
+        }
+        .dark .text-gray-500 {
+            color: #a0aec0;
+        }
+        .dark .bg-gray-200 {
+            background-color: #4a5568;
+            color: #e2e8f0;
+        }
+        .dark .bg-gray-300:hover {
+            background-color: #616e84;
+        }
+        .dark .text-gray-800 {
+            color: #e2e8f0;
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <div class="toggle-container">
-            <button id="theme-toggle">Light/Dark Mode</button>
-        </div>
-        <h1>Defect Scanner </h1>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
 
-        <img src="image/index-splash.jpg" alt="Defect Scanner - AI Image Quality Control" style="width: 100%; height: auto; border-radius: 8px; margin: 20px 0;">
-
-        <p>Select a defect detection method to begin.</p>
-        
-        <div class="selection-container">
-            <label for="method-select">Defect Detection Method:</label>
-            <select id="method-select">
-                <option value="change" selected>1. Based on changes in image</option>
-                <option value="compare">2. Based on compare with a reference base image</option>
-                <option value="opencv">3. Based on OpenCV</option>
-            </select>
-            <button id="go-button">Go</button>
-        </div>
-
-        <div id="help-content-change" style="display: block;">
-            <hr>
-            <h2>How the Defect Scanner Works</h2>
-            <p>This app uses a smart algorithm to find potential defects by looking for changes in the image. Think of it like a detective searching for clues.</p>
-
-            <hr>
-            
-            <h2>The Algorithm (in Layman's Terms)</h2>
-            <p>Our app follows a simple, 3-step process to find defects:</p>
-            <ol>
-                <li>
-                    <strong>Find the Lines:</strong> The app first converts the photo to black and white. Then, it uses a special filter to find all the sharp lines, or "edges," in the image. A crack or scratch usually shows up as a very strong, distinct line.
-                </li>
-                <li>
-                    <strong>Connect the Lines:</strong> It then looks at these lines and connects them into complete shapes, which we call "contours." It ignores the tiny, insignificant lines that are likely just noise.
-                </li>
-                <li>
-                    <strong>Check the Shapes:</strong> Finally, the app looks at the size and shape of these detected features. It uses your settings to decide if a shape is a potential defect or just a normal part of the object.
-                </li>
-            </ol>
-            
-            <hr>
-            
-            <h2>Understanding the Parameters</h2>
-            <p>You can adjust these settings to help the app find the right defects and avoid false alarms.</p>
-            <ul>
-                <li>
-                    <strong>Min. Defect Area:</strong> This is the <strong>minimum size of a defect</strong> the app will look for. If a detected shape is smaller than this value, the app will ignore it. Use a higher number to ignore tiny specks of dust or small shadows.
-                </li>
-                <li>
-                    <strong>Min. & Max. Aspect Ratio:</strong> This controls the <strong>shape of the defect</strong>. The ratio compares a shape's width to its height.
-                    <ul>
-                        <li>A <strong>low number</strong> (like 0.1) means you're looking for shapes that are very tall and thin (like a vertical scratch).</li>
-                        <li>A <strong>high number</strong> (like 10) means you're looking for shapes that are very wide and flat (like a horizontal crack).</li>
-                        <li>A number closer to 1 means you're looking for a shape that is more square or round.</li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-
-        <div id="help-content-compare" style="display: none;">
-            <hr>
-            <h2>How the Defect Scanner Works</h2>
-            <p>This app works like a digital twin. It needs two photos: one of a perfect, reference item, and one of the item being inspected. The algorithm then lines up the two images and compares them pixel by pixel. It looks for significant differences in color and brightness between the two images. For example, if a pixel is bright red in the reference image but is dark gray in the inspection image, the app flags it. The <strong>Pixel Difference Threshold</strong> parameter controls how big this difference needs to be before it's considered a defect. Finally, the app looks for groups of these different pixels that are larger than a certain size, which is set by the <strong>Min. Defect Area</strong> parameter, and highlights them as potential defects. This method is effective for finding scratches, dents, or missing parts by comparing a faulty item to a known good one.</p>
-        </div>
-        
-        <div id="help-content-opencv" style="display: none;">
-            <hr>
-            <h2>Utilizing OpenCV for Advanced Analysis</h2>
-            <p>This advanced method leverages the full power of the OpenCV library to perform more sophisticated defect analysis. Instead of just looking for simple pixel changes, it uses a multi-step computer vision pipeline to isolate and identify anomalies. This includes converting the image to different color spaces, applying morphological operations to clean up noise and fill gaps, and then finding and filtering contours based on their shape, size, and aspect ratio. This approach is highly effective for detecting a wider range of defects, from subtle scratches to complex textural irregularities, with greater precision.</p>
-        </div>
+    <!-- Dark/Light Mode Toggle -->
+    <div class="absolute top-4 right-4">
+        <button id="themeToggle" class="p-2 rounded-full bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400">
+            <svg id="sunIcon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <svg id="moonIcon" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+        </button>
     </div>
 
-    <script>
-        const methodSelect = document.getElementById('method-select');
-        const goButton = document.getElementById('go-button');
-        const helpContentChange = document.getElementById('help-content-change');
-        const helpContentCompare = document.getElementById('help-content-compare');
-        const helpContentOpenCV = document.getElementById('help-content-opencv');
-        const themeToggle = document.getElementById('theme-toggle');
+    <!-- Main Content Card -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 max-w-3xl w-full text-center dark:bg-gray-800 transition-colors">
+        
+        <!-- Splash Image & Logo -->
+        <img src="image/index-splash.jpg" alt="Defect Scanner - AI Image Quality Control" class="w-full rounded-xl mb-6 shadow-md">
+        <div class="flex items-center justify-center mb-4">
+            <svg class="h-12 w-12 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L12 12m0 0l2.25-5.25M12 12l2.25 5.25M12 12L9.75 7.75" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12a8 8 0 110-16 8 8 0 010 16z" />
+            </svg>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 ml-4 dark:text-gray-100">Defect Scanner</h1>
+        </div>
+        <p class="text-base text-gray-500 mb-8 dark:text-gray-400">AI-powered image quality control for detecting subtle flaws and imperfections.</p>
 
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
+        <!-- Method Descriptions & Navigation -->
+        <div class="flex flex-col space-y-8">
+            <!-- AI-Based Detection Description -->
+            <div class="text-left bg-gray-100 rounded-xl p-6 shadow-sm dark:bg-gray-700 transition-colors">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-2 dark:text-gray-100">AI-Based Defect Detection</h2>
+                <p class="text-sm text-gray-600 mb-4 dark:text-gray-300">
+                    Our AI-based application uses an advanced model to perform comprehensive image analysis. It's designed to identify a wide range of defects, from minor scratches and discoloration to complex pattern anomalies. This method is ideal for general-purpose quality checks where the type of defect is unknown.
+                </p>
+                <a href="ai-based-detection.html" class="inline-block bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
+                    Launch AI App
+                </a>
+            </div>
+
+            <!-- Change-Based Comparison Description -->
+            <div class="text-left bg-gray-100 rounded-xl p-6 shadow-sm dark:bg-gray-700 transition-colors">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-2 dark:text-gray-100">Change-Based Comparison</h2>
+                <p class="text-sm text-gray-600 mb-4 dark:text-gray-300">
+                    This method specializes in comparing two images to highlight their differences. By analyzing minute changes between a 'golden' reference image and a new sample, it can pinpoint even the smallest variations. This is a crucial tool for quality control in manufacturing, where identical products are expected.
+                </p>
+                <a href="compare-app.html" class="inline-block bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
+                    Launch Compare App
+                </a>
+            </div>
+
+            <!-- OpenCV Comparison Description -->
+            <div class="text-left bg-gray-100 rounded-xl p-6 shadow-sm dark:bg-gray-700 transition-colors">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-2 dark:text-gray-100">OpenCV Method</h2>
+                <p class="text-sm text-gray-600 mb-4 dark:text-gray-300">
+                    Our OpenCV-based method provides a more traditional computer vision approach to defect detection. Using classic algorithms, it can identify common issues like blobs, contours, and edges. While it may require more specific tuning, it offers a robust and transparent way to perform image analysis, often with high performance.
+                </p>
+                <a href="compare-opencv.html" class="inline-block bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+                    Launch OpenCV Method
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript for Dark Mode Toggle -->
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+
+        // Set initial theme based on user's system preference or local storage
+        const userPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const storedTheme = localStorage.getItem('theme');
+
+        if (storedTheme === 'dark' || (!storedTheme && userPrefersDark)) {
+            document.documentElement.classList.add('dark');
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
         }
 
         themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            if (document.body.classList.contains('dark-mode')) {
+            document.documentElement.classList.toggle('dark');
+            if (document.documentElement.classList.contains('dark')) {
                 localStorage.setItem('theme', 'dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
             } else {
                 localStorage.setItem('theme', 'light');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
             }
         });
-
-        methodSelect.addEventListener('change', () => {
-            helpContentChange.style.display = 'none';
-            helpContentCompare.style.display = 'none';
-            helpContentOpenCV.style.display = 'none';
-
-            if (methodSelect.value === 'change') {
-                helpContentChange.style.display = 'block';
-            } else if (methodSelect.value === 'compare') {
-                helpContentCompare.style.display = 'block';
-            } else if (methodSelect.value === 'opencv') {
-                helpContentOpenCV.style.display = 'block';
-            }
-        });
-
-        goButton.addEventListener('click', () => {
-            const selectedMethod = methodSelect.value;
-            if (selectedMethod === 'change') {
-                window.location.href = 'main-app.html';
-            } else if (selectedMethod === 'compare') {
-                window.location.href = 'compare-app.html';
-            } else if (selectedMethod === 'opencv') {
-                window.location.href = 'compare-opencv.html';
-            }
-        });
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(reg => console.log('Service Worker registered!', reg))
-                    .catch(err => console.log('Service Worker registration failed: ', err));
-            });
-        }
     </script>
 </body>
 </html>

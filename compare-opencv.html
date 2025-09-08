@@ -6,7 +6,7 @@
     <title>Defect Scanner - Comparison</title>
 
     <!-- SEO and Metadata -->
-    <meta name="description" content="Analyze images for defects by detecting changes and anomalies. Adjust parameters for precise results.">
+    <meta name="description" content="Analyze a single image for defects by detecting changes and anomalies. Adjust parameters for precise results using computer vision.">
     <meta property="og:title" content="Defect Scanner - Comparison-Based Analysis">
     <meta property="og:description" content="Analyze single images for defects by detecting internal changes and anomalies.">
     <meta property="og:type" content="website">
@@ -60,6 +60,14 @@
         }
         .text-placeholder {
             @apply text-gray-400 dark:text-gray-500;
+        }
+        .loader {
+            border-top-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
     <!-- Link to the OpenCV.js library from a CDN -->
@@ -241,7 +249,7 @@
             let distMap = new cv.Mat();
             let distMapNorm = new cv.Mat();
             let thresholdedDensity = new cv.Mat();
-            let markers = new cv.Mat.zeros(src.rows, src.cols, cv.CV_32SC1);
+            let markers = cv.Mat.zeros(src.rows, src.cols, cv.CV_32SC1);
             let hierarchy = new cv.Mat();
             let contours = new cv.MatVector();
             let contoursFinal = new cv.MatVector();
@@ -249,28 +257,46 @@
             let defectRects = [];
             
             try {
+                // Step 1: Pre-process the image
+                // Convert to grayscale and invert colors to make defects white on black
                 cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
                 cv.bitwise_not(gray, gray);
+
+                // Apply Gaussian blur to smooth the image and reduce noise
                 cv.GaussianBlur(gray, blur, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
+
+                // Apply adaptive thresholding to create a binary image
                 cv.adaptiveThreshold(blur, binary, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2);
 
+                // Step 2: Use Distance Transform and Watershed
+                // The distance transform calculates the distance from each pixel to the nearest zero pixel
                 cv.distanceTransform(binary, distMap, cv.DIST_L2, 5);
                 cv.normalize(distMap, distMapNorm, 0, 255, cv.NORM_MINMAX, cv.CV_8U);
 
+                // Threshold the normalized distance map to find potential defect markers
                 let densityThreshold = parseInt(document.getElementById('densityThresholdInput').value);
                 cv.threshold(distMapNorm, thresholdedDensity, densityThreshold, 255, cv.THRESH_BINARY);
                 
+                // Find contours of the defect markers
                 cv.findContours(thresholdedDensity, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
                 for (let i = 0; i < contours.size(); ++i) {
+                    // Draw the contours on the markers mat
                     cv.drawContours(markers, contours, i, new cv.Scalar(i + 1), -1);
                 }
                 
+                // Convert the source image to the correct color space for watershed
                 cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+
+                // Perform the watershed algorithm to segment the defects
                 cv.watershed(src, markers);
 
+                // Step 3: Analyze and filter defects
                 let defectCount = 0;
                 let minArea = parseInt(document.getElementById('minAreaInput').value);
+                let minRatio = parseFloat(document.getElementById('minRatioInput').value);
+                let maxRatio = parseFloat(document.getElementById('maxRatioInput').value);
 
+                // Find the final contours from the segmented markers
                 cv.findContours(markers, contoursFinal, hierarchyFinal, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
 
                 for (let i = 0; i < contoursFinal.size(); ++i) {
@@ -280,17 +306,16 @@
                     if (area > minArea) {
                         let rect = cv.boundingRect(contour);
                         let ratio = rect.width / rect.height;
-                        let minRatio = parseFloat(document.getElementById('minRatioInput').value);
-                        let maxRatio = parseFloat(document.getElementById('maxRatioInput').value);
 
                         if (ratio >= minRatio && ratio <= maxRatio) {
                             defectRects.push(rect);
                             defectCount++;
                         }
                     }
-                    contour.delete();
+                    contour.delete(); // Clean up memory for each contour
                 }
 
+                // Step 4: Display results
                 const resultsDiv = document.createElement('div');
                 resultsDiv.className = 'w-full space-y-4';
 
@@ -305,18 +330,16 @@
                 }
                 resultsDiv.appendChild(resultText);
 
-                const finalImageTitle = document.createElement('h4');
-                finalImageTitle.textContent = "Final Result";
-                finalImageTitle.className = 'text-center text-md font-semibold mt-4 mb-2';
-                resultsDiv.appendChild(finalImageTitle);
-
+                // Create a canvas to draw the final result
                 const canvasOutput = document.createElement('canvas');
                 canvasOutput.width = img.width;
                 canvasOutput.height = img.height;
                 const ctx = canvasOutput.getContext('2d');
                 
+                // Draw the original image first
                 ctx.drawImage(img, 0, 0);
                 
+                // Draw bounding boxes around the detected defects
                 for (let i = 0; i < defectRects.length; i++) {
                     let rect = defectRects[i];
                     ctx.beginPath();
@@ -334,13 +357,22 @@
                 loadingStatus.textContent = 'Scan complete.';
 
             } catch (err) {
-                loadingStatus.textContent = 'An error occurred during scanning: ' + err;
+                loadingStatus.textContent = 'An error occurred during scanning: ' + err.message;
                 console.error(err);
             } finally {
-                src.delete(); gray.delete(); blur.delete(); binary.delete();
-                distMap.delete(); distMapNorm.delete(); thresholdedDensity.delete();
-                markers.delete(); hierarchy.delete(); contours.delete();
-                contoursFinal.delete(); hierarchyFinal.delete();
+                // IMPORTANT: Always delete the OpenCV Mat objects to free memory
+                if (src) src.delete();
+                if (gray) gray.delete();
+                if (blur) blur.delete();
+                if (binary) binary.delete();
+                if (distMap) distMap.delete();
+                if (distMapNorm) distMapNorm.delete();
+                if (thresholdedDensity) thresholdedDensity.delete();
+                if (markers) markers.delete();
+                if (hierarchy) hierarchy.delete();
+                if (contours) contours.delete();
+                if (contoursFinal) contoursFinal.delete();
+                if (hierarchyFinal) hierarchyFinal.delete();
             }
         }
 

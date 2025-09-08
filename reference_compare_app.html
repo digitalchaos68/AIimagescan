@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Reference-Based Image Comparison</title>
+    
+    <!-- SEO and Open Graph metadata for sharing -->
+    <meta name="description" content="Reference-based image comparison tool to find defects and differences.">
+    <meta property="og:title" content="Reference-Based Image Comparison">
+    <meta property="og:description" content="An AI-powered tool to compare a reference image against a test image for quality control.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://digitalchaos68.github.io/AIimagescan/reference_compare_app.html">
+    <meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/compare-app-splash.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Reference-Based Image Comparison">
+    <meta name="twitter:description" content="Find and analyze defects in images using advanced AI algorithms.">
+    <meta name="twitter:image" content="https://digitalchaos68.github.io/AIimagescan/image/compare-app-splash.jpg">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .light-mode {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .dark-mode {
+            background-color: #1f2937;
+            color: #f3f4f6;
+        }
+        .dark-mode .bg-white {
+            background-color: #2d3748;
+        }
+        .dark-mode .text-gray-800 {
+            color: #e2e8f0;
+        }
+        .dark-mode .text-gray-500, .dark-mode .text-gray-700 {
+            color: #a0aec0;
+        }
+        .dark-mode .text-gray-400 {
+            color: #718096;
+        }
+        .dark-mode .border-gray-300 {
+            border-color: #4a5568;
+        }
+        .dark-mode .rounded-lg {
+            border-color: #4a5568;
+        }
+        /* Style for the theme toggle button */
+        #theme-toggle {
+            cursor: pointer;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 3rem;
+            height: 1.5rem;
+            background-color: #ccc;
+            border-radius: 9999px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0.25rem;
+        }
+        #theme-toggle .toggle-thumb {
+            width: 1rem;
+            height: 1rem;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        #theme-toggle.dark .toggle-thumb {
+            transform: translateX(1.5rem);
+        }
+    </style>
+</head>
+<body class="light-mode min-h-screen flex items-center justify-center p-4 relative">
+
+    <!-- Theme Toggle Button -->
+    <button id="theme-toggle" class="bg-gray-300">
+        <span class="toggle-thumb"></span>
+    </button>
+
+    <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-4xl">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Reference-Based Image Comparison</h1>
+        <p class="text-center text-gray-500 mb-8">Upload a reference image and a test image to find the differences.</p>
+
+        <!-- Splash Screen Placeholder -->
+        <div id="splash-screen" class="flex flex-col items-center justify-center text-center p-6 mb-8">
+            <img src="image/compare-app-splash.jpg" alt="Image Comparison Placeholder" class="rounded-lg shadow-md mb-4">
+            <p class="text-gray-600 text-lg">Upload your images above to begin the analysis.</p>
+        </div>
+
+        <!-- Image Upload Section -->
+        <div id="upload-section" class="flex flex-col md:flex-row gap-6 mb-8">
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Reference Image</label>
+                <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-all cursor-pointer">
+                    <input type="file" id="referenceImageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                    <div class="text-gray-400">
+                        <svg class="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                            <path d="M28 8H12a2 2 0 00-2 2v16m16-4h-8m-4 0v-4m-4 4h-4m-4 0a2 2 0 01-2-2V10a2 2 0 012-2h12l-4 4h8a2 2 0 012 2v4a2 2 0 00-2 2h-8m-4 4v4m4 0h-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <p class="mt-2 text-sm">Drag and drop or click to upload</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Test Image</label>
+                <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-all cursor-pointer">
+                    <input type="file" id="testImageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                    <div class="text-gray-400">
+                        <svg class="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                            <path d="M28 8H12a2 2 0 00-2 2v16m16-4h-8m-4 0v-4m-4 4h-4m-4 0a2 2 0 01-2-2V10a2 2 0 012-2h12l-4 4h8a2 2 0 012 2v4a2 2 0 00-2 2h-8m-4 4v4m4 0h-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <p class="mt-2 text-sm">Drag and drop or click to upload</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Section with new sensitivity parameter -->
+        <div class="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+            <div class="flex-1 w-full sm:w-auto">
+                <label for="sensitivityInput" class="block text-sm font-medium text-gray-700">Sensitivity: <span id="sensitivityValue">50</span></label>
+                <input type="range" id="sensitivityInput" min="1" max="255" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+            </div>
+            <button id="compareButton" class="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Compare Images
+            </button>
+            <div id="loadingIndicator" class="hidden text-sm text-gray-500 animate-pulse">
+                Analyzing images...
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsContainer" class="hidden">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">Comparison Results</h2>
+            <div id="imageContainer" class="flex flex-col md:flex-row justify-center items-center gap-6">
+                <!-- Image previews and difference canvas will be appended here -->
+            </div>
+            <div id="summary" class="mt-8 text-center text-lg font-medium text-gray-700"></div>
+        </div>
+
+        <!-- Custom Modal -->
+        <div id="alertModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle"></h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p class="text-sm text-gray-500" id="modalMessage"></p>
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <button id="modalCloseButton" class="px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Theme Toggling Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function setTheme(theme) {
+            const body = document.body;
+            const toggle = themeToggleBtn;
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                body.classList.remove('light-mode');
+                toggle.classList.add('dark');
+                toggle.style.backgroundColor = '#4a5568';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                toggle.classList.remove('dark');
+                toggle.style.backgroundColor = '#a0aec0';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        const storedTheme = localStorage.getItem('theme');
+        if (storedTheme) {
+            setTheme(storedTheme);
+        } else {
+            setTheme(prefersDarkScheme.matches ? 'dark' : 'light');
+        }
+
+        prefersDarkScheme.addListener((event) => {
+            setTheme(event.matches ? 'dark' : 'light');
+        });
+
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'dark') {
+                setTheme('light');
+            } else {
+                setTheme('dark');
+            }
+        });
+
+        // Custom modal function to replace alert()
+        function showModal(title, message) {
+            const modal = document.getElementById('alertModal');
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            modal.classList.remove('hidden');
+        }
+
+        document.getElementById('modalCloseButton').addEventListener('click', () => {
+            document.getElementById('alertModal').classList.add('hidden');
+        });
+
+        const referenceImageInput = document.getElementById('referenceImageInput');
+        const testImageInput = document.getElementById('testImageInput');
+        const compareButton = document.getElementById('compareButton');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const imageContainer = document.getElementById('imageContainer');
+        const summary = document.getElementById('summary');
+        const splashScreen = document.getElementById('splash-screen');
+        const sensitivityInput = document.getElementById('sensitivityInput');
+        const sensitivityValue = document.getElementById('sensitivityValue');
+
+        // Update the sensitivity value display
+        sensitivityInput.addEventListener('input', (e) => {
+            sensitivityValue.textContent = e.target.value;
+        });
+
+        compareButton.addEventListener('click', async () => {
+            const refFile = referenceImageInput.files[0];
+            const testFile = testImageInput.files[0];
+
+            if (!refFile || !testFile) {
+                showModal('Missing Images', 'Please upload both a reference and a test image to continue.');
+                return;
+            }
+
+            // Hide the splash screen and previous results, show loading indicator
+            splashScreen.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+            resultsContainer.classList.add('hidden');
+            imageContainer.innerHTML = '';
+            summary.textContent = '';
+
+            try {
+                const sensitivityThreshold = parseInt(sensitivityInput.value, 10);
+                
+                // Read images as data URLs
+                const refDataUrl = await readFileAsDataURL(refFile);
+                const testDataUrl = await readFileAsDataURL(testFile);
+
+                // Load images into an HTMLImageElement
+                const refImage = await loadImage(refDataUrl);
+                const testImage = await loadImage(testDataUrl);
+
+                if (refImage.width !== testImage.width || refImage.height !== testImage.height) {
+                    showModal('Image Dimensions Mismatch', 'The reference and test images must have the same dimensions for comparison.');
+                    loadingIndicator.classList.add('hidden');
+                    return;
+                }
+
+                // Create a temporary canvas to get pixel data
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = refImage.width;
+                canvas.height = refImage.height;
+
+                // Get pixel data for reference image
+                ctx.drawImage(refImage, 0, 0);
+                const refImageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+                // Get pixel data for test image
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(testImage, 0, 0);
+                const testImageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+                // Create the difference image data
+                const diffImageData = ctx.createImageData(canvas.width, canvas.height);
+                let differences = 0;
+                let totalPixels = canvas.width * canvas.height;
+
+                for (let i = 0; i < refImageData.length; i += 4) {
+                    const rRef = refImageData[i];
+                    const gRef = refImageData[i + 1];
+                    const bRef = refImageData[i + 2];
+                    const aRef = refImageData[i + 3];
+
+                    const rTest = testImageData[i];
+                    const gTest = testImageData[i + 1];
+                    const bTest = testImageData[i + 2];
+                    const aTest = testImageData[i + 3];
+
+                    // Simple difference check using the adjustable sensitivity threshold
+                    const diff = Math.abs(rRef - rTest) + Math.abs(gRef - gTest) + Math.abs(bRef - bTest);
+                    const alphaDiff = Math.abs(aRef - aTest);
+
+                    // If a significant difference is found
+                    if (diff > sensitivityThreshold || alphaDiff > sensitivityThreshold) { 
+                        diffImageData.data[i] = 255; // Red
+                        diffImageData.data[i + 1] = 0; // Green
+                        diffImageData.data[i + 2] = 0; // Blue
+                        diffImageData.data[i + 3] = 255; // Alpha
+                        differences++;
+                    } else {
+                        // Keep the pixel transparent if no difference
+                        diffImageData.data[i + 3] = 0;
+                    }
+                }
+
+                // Create and display the difference canvas
+                const diffCanvas = document.createElement('canvas');
+                const diffCtx = diffCanvas.getContext('2d');
+                diffCanvas.width = canvas.width;
+                diffCanvas.height = canvas.height;
+                diffCtx.putImageData(diffImageData, 0, 0);
+                diffCanvas.className = 'rounded-lg shadow-md border border-gray-200';
+
+                // Display original images for context
+                const refImgElement = document.createElement('img');
+                refImgElement.src = refDataUrl;
+                refImgElement.className = 'w-full md:w-1/3 rounded-lg shadow-md';
+                
+                const testImgElement = document.createElement('img');
+                testImgElement.src = testDataUrl;
+                testImgElement.className = 'w-full md:w-1/3 rounded-lg shadow-md';
+
+                // Set up the layout with a heading for the difference image
+                const diffWrapper = document.createElement('div');
+                diffWrapper.className = 'w-full md:w-1/3 flex flex-col items-center gap-2';
+                const diffHeading = document.createElement('h3');
+                diffHeading.textContent = 'Differences Highlighted';
+                diffHeading.className = 'text-lg font-semibold text-gray-700';
+                diffWrapper.appendChild(diffHeading);
+                diffWrapper.appendChild(diffCanvas);
+
+
+                imageContainer.appendChild(refImgElement);
+                imageContainer.appendChild(testImgElement);
+                imageContainer.appendChild(diffWrapper);
+
+
+                // Calculate and display summary
+                const differencePercentage = (differences / totalPixels) * 100;
+                summary.textContent = `Total different pixels: ${differences} (${differencePercentage.toFixed(2)}%)`;
+                
+                resultsContainer.classList.remove('hidden');
+
+            } catch (error) {
+                console.error(error);
+                showModal('Analysis Failed', 'An error occurred while processing the images. Please try again.');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        });
+
+        // Helper function to read a file and return a data URL
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Helper function to load an image from a data URL
+        function loadImage(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = src;
+            });
+        }
+    </script>
+</body>
+</html>

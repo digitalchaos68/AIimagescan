@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Based Defect Detection</title>
+    
+    <!-- Metadata for SEO and Social Sharing -->
+    <meta name="description" content="AI-powered image defect detection. Upload an image and let our AI analyze it for flaws and imperfections.">
+    <meta property="og:title" content="AI-Based Defect Detection - AI Image Quality Control">
+    <meta property="og:description" content="Use advanced AI to find defects in your images.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://digitalchaos64.github.io/AIimagescan/ai-based-detection.html">
+    <meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/ai-based-detection-splash.jpg">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+        /* Dark mode styles */
+        .dark body {
+            background-color: #1a202c;
+        }
+        .dark .bg-white {
+            background-color: #2d3748;
+        }
+        .dark .text-gray-900 {
+            color: #e2e8f0;
+        }
+        .dark .text-gray-500 {
+            color: #a0aec0;
+        }
+        .dark .bg-gray-200 {
+            background-color: #4a5568;
+            color: #e2e8f0;
+        }
+        .dark .bg-gray-300:hover {
+            background-color: #616e84;
+        }
+        .dark .text-gray-800 {
+            color: #e2e8f0;
+        }
+        .drop-area {
+            border: 2px dashed #d1d5db;
+            background-color: #f9fafb;
+            transition: all 0.2s ease-in-out;
+        }
+        .dark .drop-area {
+            border-color: #4b5563;
+            background-color: #374151;
+        }
+        .drop-area.drag-over {
+            background-color: #e0e7ff;
+            border-color: #6366f1;
+        }
+        .dark .drop-area.drag-over {
+            background-color: #3730a3;
+            border-color: #818cf8;
+        }
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
+
+    <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 max-w-4xl w-full text-center dark:bg-gray-800 transition-colors">
+        
+        <!-- Splash Image and Logo -->
+        <div class="mb-8">
+            <img src="image/Alimagescan.png" alt="Company Logo" class="mx-auto h-20 mb-4 rounded-xl">
+            <img src="image/ai-based-detection-splash.jpg" alt="Defect Scanner - AI Image Quality Control" class="mx-auto rounded-xl">
+
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 dark:text-gray-100">AI-Based Defect Detection</h1>
+        <p class="text-sm md:text-base text-gray-500 mb-8 dark:text-gray-400">Upload an image and let our AI analyze it for defects.</p>
+
+        <!-- Image Upload Section -->
+        <div class="flex flex-col items-center space-y-4">
+            <div id="drop-area" class="drop-area p-6 rounded-xl shadow-inner w-full cursor-pointer flex flex-col items-center justify-center">
+                <h2 class="text-xl font-semibold mb-2 text-gray-700 dark:text-gray-300">Upload Image</h2>
+                <p class="text-sm text-gray-500 mb-4 dark:text-gray-400">Drag & drop or click to upload</p>
+                <input type="file" id="imageInput" accept="image/*" class="hide">
+            </div>
+            
+            <div id="imagePreviewContainer" class="relative w-full rounded-xl overflow-hidden shadow-lg mt-4 hide">
+                <img id="imagePreview" src="" alt="Image Preview" class="w-full h-auto">
+            </div>
+        </div>
+
+        <!-- Analysis Parameters -->
+        <div class="bg-gray-100 rounded-xl p-6 shadow-inner w-full dark:bg-gray-700 mt-8">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Analysis Parameters</h2>
+            <div class="flex flex-col space-y-4 text-left">
+                <!-- Parameter: Sensitivity -->
+                <div>
+                    <label for="sensitivityInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Sensitivity: <span id="sensitivityValue">50</span></label>
+                    <input type="range" id="sensitivityInput" name="sensitivity" min="0" max="100" value="50" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-600 transition-colors">
+                </div>
+                <!-- Parameter: Min. Defect Area -->
+                <div>
+                    <label for="minAreaInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Min. Defect Area:</label>
+                    <input type="number" id="minAreaInput" value="500" min="0" class="w-full p-2 mt-1 rounded-md border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white">
+                </div>
+                <!-- Parameter: Min. Aspect Ratio -->
+                <div>
+                    <label for="minRatioInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Min. Aspect Ratio: <span id="minRatioValue">0.1</span></label>
+                    <input type="range" id="minRatioInput" name="minRatio" min="0" max="1" value="0.1" step="0.05" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-600 transition-colors">
+                </div>
+                <!-- Parameter: Max. Aspect Ratio -->
+                <div>
+                    <label for="maxRatioInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Max. Aspect Ratio: <span id="maxRatioValue">10</span></label>
+                    <input type="range" id="maxRatioInput" name="maxRatio" min="1" max="20" value="10" step="0.5" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-600 transition-colors">
+                </div>
+            </div>
+        </div>
+
+        <button id="analyzeButton" class="w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-transform transform hover:scale-105 hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 mt-4" disabled>
+            <span id="buttonText">Analyze</span>
+            <span id="loadingSpinner" class="hidden animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full ml-2"></span>
+        </button>
+
+        <!-- Analysis Results Section -->
+        <div id="resultsSection" class="mt-8 hide">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4 dark:text-gray-100">Analysis Results</h2>
+            <div id="resultsContainer" class="bg-gray-100 p-6 rounded-xl shadow-inner dark:bg-gray-700 text-left">
+                <!-- Analysis results will be appended here -->
+                <p id="resultText" class="text-gray-700 dark:text-gray-300">...</p>
+            </div>
+        </div>
+
+        <div class="mt-8 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center">
+            <a href="index.html" class="text-indigo-600 font-medium hover:underline dark:text-indigo-400">
+                Back to Home
+            </a>
+            <a href="compare-app.html" class="text-indigo-600 font-medium hover:underline dark:text-indigo-400">
+                Go to Change-Based Comparison
+            </a>
+            <a href="compare-opencv.html" class="text-gray-600 font-medium hover:underline dark:text-gray-400">
+                Go to OpenCV Comparison
+            </a>
+        </div>
+    </div>
+
+    <!-- JavaScript to apply theme and handle functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else if (storedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Elements
+        const dropArea = document.getElementById('drop-area');
+        const imageInput = document.getElementById('imageInput');
+        const analyzeButton = document.getElementById('analyzeButton');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const buttonText = document.getElementById('buttonText');
+        const resultsSection = document.getElementById('resultsSection');
+        const resultText = document.getElementById('resultText');
+        const sensitivityInput = document.getElementById('sensitivityInput');
+        const sensitivityValue = document.getElementById('sensitivityValue');
+        const minAreaInput = document.getElementById('minAreaInput');
+        const minRatioInput = document.getElementById('minRatioInput');
+        const minRatioValue = document.getElementById('minRatioValue');
+        const maxRatioInput = document.getElementById('maxRatioInput');
+        const maxRatioValue = document.getElementById('maxRatioValue');
+
+        // Event listeners for drag-and-drop
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('drag-over');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('drag-over');
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        // Event listener for click to upload
+        dropArea.addEventListener('click', () => {
+            imageInput.click();
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('hide');
+                    analyzeButton.disabled = false;
+                    resultsSection.classList.add('hide'); // Hide results on new upload
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Update slider value displays
+        sensitivityInput.addEventListener('input', () => {
+            sensitivityValue.textContent = sensitivityInput.value;
+        });
+        minRatioInput.addEventListener('input', () => {
+            minRatioValue.textContent = minRatioInput.value;
+        });
+        maxRatioInput.addEventListener('input', () => {
+            maxRatioValue.textContent = maxRatioInput.value;
+        });
+
+        analyzeButton.addEventListener('click', async () => {
+            analyzeButton.disabled = true;
+            loadingSpinner.classList.remove('hidden');
+            buttonText.textContent = 'Analyzing...';
+            resultsSection.classList.add('hide');
+
+            const imageDataUrl = imagePreview.src;
+            const base64ImageData = imageDataUrl.split(',')[1];
+            
+            // Get all parameter values
+            const sensitivity = sensitivityInput.value;
+            const minArea = minAreaInput.value;
+            const minRatio = minRatioInput.value;
+            const maxRatio = maxRatioInput.value;
+
+            const prompt = `Analyze this image for any defects, flaws, or imperfections using the following parameters:
+- Sensitivity: ${sensitivity} (0-100)
+- Minimum Defect Area: ${minArea}
+- Minimum Aspect Ratio: ${minRatio}
+- Maximum Aspect Ratio: ${maxRatio}
+
+Describe any issues you find. If the image appears to be a placeholder or generic, state that no specific defects can be found.`;
+            
+            try {
+                const payload = {
+                    contents: [
+                        {
+                            role: "user",
+                            parts: [
+                                { text: prompt },
+                                {
+                                    inlineData: {
+                                        mimeType: "image/jpeg", // or image/png based on the image type
+                                        data: base64ImageData
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                };
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || "No analysis result found.";
+
+                resultText.textContent = text;
+                resultsSection.classList.remove('hide');
+            } catch (error) {
+                console.error('Error during analysis:', error);
+                resultText.textContent = `Analysis failed: ${error.message}`;
+                resultsSection.classList.remove('hide');
+            } finally {
+                analyzeButton.disabled = false;
+                loadingSpinner.classList.add('hidden');
+                buttonText.textContent = 'Analyze';
+            }
+        });
+    </script>
+</body>
+</html>

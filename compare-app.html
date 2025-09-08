@@ -1,88 +1,378 @@
-
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="style.css">
-<title>Defect Scanner - Compare with Reference</title>
- 
-<meta name="description" content="Detect defects by comparing a sample image against a perfect reference image. Ideal for quality control and finding subtle differences.">
-
-<meta property="og:title" content="Defect Scanner - Compare with Reference">
-<meta property="og:description" content="Compare a sample image with a perfect reference image to detect defects.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://digitalchaos68.github.io/AIimagescan/compare-app.html">
-<meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/compare-app-splash.jpg">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Defect Scanner - Compare with Reference">
-<meta name="twitter:description" content="Use AI to find defects by comparing two images side-by-side.">
-<meta name="twitter:image" content="https://digitalchaos68.github.io/AIimagescan/image/compare-app-splash.jpg">
-
-<link rel="canonical" href="https://digitalchaos68.github.io/AIimagescan/compare-app.html">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Defect Scanner",
-  "description": "AI-powered tool for comparing images to a reference to find defects.",
-  "applicationCategory": "Utilities",
-  "operatingSystem": "All",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  },
-  "url": "https://digitalchaos68.github.io/AIimagescan/compare-app.html",
-  "logo": "https://digitalchaos68.github.io/AIimagescan/image/logo.png"
-}
-</script>    
-    <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
-</head>
-<body>
-    <div class="container">
-        <button onclick="window.location.href='index.html'">Back to Main Menu</button>
-        <h1>Defect Scanner</h1>
-        <h2>Compare with Reference Image</h2>
-        <img src="image/compare-app-splash.jpg" alt="Defect Scanner - AI Image Quality Control" style="width: 100%; height: auto; border-radius: 8px; margin: 20px 0;">
-        
-        <p>Upload a reference image (the good one) and a comparison image (the one to check for defects).</p>
-
-        <div class="image-upload-container">
-            <label>Reference Image (Good)</label>
-            <input type="file" id="referenceImage" accept="image/*">
-        </div>
-        <div class="image-upload-container">
-            <label>Image to Compare</label>
-            <input type="file" id="compareImage" accept="image/*">
-        </div>
-
-        <button id="compareButton">Compare Images</button>
-
-        <div id="parameters" style="margin-top: 20px;">
-            <h3>Comparison Parameters</h3>
-            <div>
-                <label for="thresholdInput">Pixel Difference Threshold:</label>
-                <input type="range" id="thresholdInput" value="40" min="0" max="255" step="1">
-                <span id="thresholdValue">40</span>
-            </div>
-            <div>
-                <label for="minAreaInput">Min. Defect Area:</label>
-                <input type="number" id="minAreaInput" value="50" min="0">
-            </div>
-        </div>
-        
-        <div id="results-container"></div>
-    </div>
+    <title>Change-Based Comparison</title>
     
-    <script src="compare-app.js"></script>
-    <script>
-        function onOpenCvReady() {
-            console.log('OpenCV.js is ready for comparison.');
+    <!-- Metadata for SEO and Social Sharing -->
+    <meta name="description" content="Change-based image comparison tool. Upload 'before' and 'after' images to highlight differences and find defects.">
+    <meta property="og:title" content="Change-Based Image Comparison - AI Image Quality Control">
+    <meta property="og:description" content="Compare two images to find and highlight changes, perfect for quality control.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://digitalchaos68.github.io/AIimagescan/compare-app.html">
+    <meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/compare-app-splash.jpg">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease;
         }
+        /* Dark mode styles */
+        .dark body {
+            background-color: #1a202c;
+        }
+        .dark .bg-white {
+            background-color: #2d3748;
+        }
+        .dark .text-gray-900 {
+            color: #e2e8f0;
+        }
+        .dark .text-gray-500 {
+            color: #a0aec0;
+        }
+        .dark .bg-gray-200 {
+            background-color: #4a5568;
+            color: #e2e8f0;
+        }
+        .dark .bg-gray-300:hover {
+            background-color: #616e84;
+        }
+        .dark .text-gray-800 {
+            color: #e2e8f0;
+        }
+        .drop-area {
+            border: 2px dashed #d1d5db;
+            background-color: #f9fafb;
+            transition: all 0.2s ease-in-out;
+        }
+        .dark .drop-area {
+            border-color: #4b5563;
+            background-color: #374151;
+        }
+        .drop-area.drag-over {
+            background-color: #e0e7ff;
+            border-color: #6366f1;
+        }
+        .dark .drop-area.drag-over {
+            background-color: #3730a3;
+            border-color: #818cf8;
+        }
+        .hide {
+            display: none;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
+
+    <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 max-w-4xl w-full text-center dark:bg-gray-800 transition-colors">
+        
+        <!-- Splash Image and Logo -->
+        <div class="mb-8">
+            <img src="image/Alimagescan.png"  alt="Company Logo" class="mx-auto h-20 mb-4 rounded-xl">
+            <img src="image/compare-app-splash.jpg" alt="Change Detection Splash" class="mx-auto rounded-xl">
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 dark:text-gray-100">Change-Based Comparison</h1>
+        <p class="text-sm md:text-base text-gray-500 mb-8 dark:text-gray-400">Upload two images to find and highlight the differences.</p>
+
+        <!-- Image Upload Section -->
+        <div class="flex flex-col md:flex-row items-center justify-around space-y-4 md:space-y-0 md:space-x-4 w-full">
+            <!-- Before Image -->
+            <div class="flex flex-col items-center space-y-2 w-full">
+                <div id="drop-area-before" class="drop-area p-6 rounded-xl shadow-inner w-full cursor-pointer flex flex-col items-center justify-center">
+                    <h2 class="text-xl font-semibold mb-2 text-gray-700 dark:text-gray-300">Upload 'Before' Image</h2>
+                    <p class="text-sm text-gray-500 mb-4 dark:text-gray-400">Drag & drop or click to upload</p>
+                    <input type="file" id="imageInputBefore" accept="image/*" class="hide">
+                </div>
+                <div id="imagePreviewContainerBefore" class="relative w-full rounded-xl overflow-hidden shadow-lg mt-4 hide">
+                    <img id="imagePreviewBefore" src="" alt="Before Image" class="w-full h-auto">
+                </div>
+            </div>
+            
+            <!-- After Image -->
+            <div class="flex flex-col items-center space-y-2 w-full">
+                <div id="drop-area-after" class="drop-area p-6 rounded-xl shadow-inner w-full cursor-pointer flex flex-col items-center justify-center">
+                    <h2 class="text-xl font-semibold mb-2 text-gray-700 dark:text-gray-300">Upload 'After' Image</h2>
+                    <p class="text-sm text-gray-500 mb-4 dark:text-gray-400">Drag & drop or click to upload</p>
+                    <input type="file" id="imageInputAfter" accept="image/*" class="hide">
+                </div>
+                <div id="imagePreviewContainerAfter" class="relative w-full rounded-xl overflow-hidden shadow-lg mt-4 hide">
+                    <img id="imagePreviewAfter" src="" alt="After Image" class="w-full h-auto">
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Parameters -->
+        <div class="bg-gray-100 rounded-xl p-6 shadow-inner w-full dark:bg-gray-700 mt-8">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Comparison Parameters</h2>
+            <div class="flex flex-col space-y-4 text-left">
+                <!-- Parameter: Pixel Difference Threshold -->
+                <div>
+                    <label for="thresholdInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Pixel Difference Threshold: <span id="thresholdValue">40</span></label>
+                    <input type="range" id="thresholdInput" name="threshold" min="0" max="255" value="40" step="1" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-600 transition-colors">
+                </div>
+                <!-- Parameter: Min. Defect Area -->
+                <div>
+                    <label for="minAreaInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Min. Defect Area:</label>
+                    <input type="number" id="minAreaInput" value="50" min="0" class="w-full p-2 mt-1 rounded-md border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white">
+                </div>
+            </div>
+        </div>
+
+        <button id="analyzeButton" class="w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-transform transform hover:scale-105 hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 mt-4" disabled>
+            <span id="buttonText">Compare Images</span>
+            <span id="loadingSpinner" class="hidden animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full ml-2"></span>
+        </button>
+
+        <!-- Analysis Results Section -->
+        <div id="resultsSection" class="mt-8 hide">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4 dark:text-gray-100">Differences Highlighted</h2>
+            <div id="resultsContainer" class="bg-gray-100 p-6 rounded-xl shadow-inner dark:bg-gray-700 text-center flex justify-center">
+                <canvas id="diffCanvas" class="w-full h-auto rounded-lg shadow-md"></canvas>
+            </div>
+            <p id="resultText" class="mt-4 text-gray-700 dark:text-gray-300"></p>
+        </div>
+
+        <div class="mt-8 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center">
+            <a href="index.html" class="text-indigo-600 font-medium hover:underline dark:text-indigo-400">
+                Back to Home
+            </a>
+            <a href="ai-based-detection.html" class="text-indigo-600 font-medium hover:underline dark:text-indigo-400">
+                Go to AI-Based Detection
+            </a>
+            <a href="compare-opencv.html" class="text-gray-600 font-medium hover:underline dark:text-gray-400">
+                Go to OpenCV Comparison
+            </a>
+        </div>
+    </div>
+
+    <!-- JavaScript to apply theme and handle functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else if (storedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        const dropAreaBefore = document.getElementById('drop-area-before');
+        const imageInputBefore = document.getElementById('imageInputBefore');
+        const dropAreaAfter = document.getElementById('drop-area-after');
+        const imageInputAfter = document.getElementById('imageInputAfter');
+        const imagePreviewBefore = document.getElementById('imagePreviewBefore');
+        const imagePreviewAfter = document.getElementById('imagePreviewAfter');
+        const imagePreviewContainerBefore = document.getElementById('imagePreviewContainerBefore');
+        const imagePreviewContainerAfter = document.getElementById('imagePreviewContainerAfter');
+        const analyzeButton = document.getElementById('analyzeButton');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const buttonText = document.getElementById('buttonText');
+        const resultsSection = document.getElementById('resultsSection');
+        const diffCanvas = document.getElementById('diffCanvas');
+        const resultText = document.getElementById('resultText');
+        const thresholdInput = document.getElementById('thresholdInput');
+        const thresholdValue = document.getElementById('thresholdValue');
+        const minAreaInput = document.getElementById('minAreaInput');
+        
+        let beforeImageLoaded = false;
+        let afterImageLoaded = false;
+
+        function handleFile(file, imagePreview, imagePreviewContainer, imageLoadedFlag) {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('hide');
+                    if (imageLoadedFlag === 'before') beforeImageLoaded = true;
+                    if (imageLoadedFlag === 'after') afterImageLoaded = true;
+                    checkCanAnalyze();
+                    resultsSection.classList.add('hide'); // Hide results on new upload
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function checkCanAnalyze() {
+            analyzeButton.disabled = !(beforeImageLoaded && afterImageLoaded);
+        }
+
+        // Drag-and-drop event listeners for 'before' image
+        dropAreaBefore.addEventListener('dragover', (e) => { e.preventDefault(); dropAreaBefore.classList.add('drag-over'); });
+        dropAreaBefore.addEventListener('dragleave', () => { dropAreaBefore.classList.remove('drag-over'); });
+        dropAreaBefore.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropAreaBefore.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handleFile(files[0], imagePreviewBefore, imagePreviewContainerBefore, 'before');
+        });
+        dropAreaBefore.addEventListener('click', () => { imageInputBefore.click(); });
+        imageInputBefore.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFile(e.target.files[0], imagePreviewBefore, imagePreviewContainerBefore, 'before');
+        });
+
+        // Drag-and-drop event listeners for 'after' image
+        dropAreaAfter.addEventListener('dragover', (e) => { e.preventDefault(); dropAreaAfter.classList.add('drag-over'); });
+        dropAreaAfter.addEventListener('dragleave', () => { dropAreaAfter.classList.remove('drag-over'); });
+        dropAreaAfter.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropAreaAfter.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handleFile(files[0], imagePreviewAfter, imagePreviewContainerAfter, 'after');
+        });
+        dropAreaAfter.addEventListener('click', () => { imageInputAfter.click(); });
+        imageInputAfter.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFile(e.target.files[0], imagePreviewAfter, imagePreviewContainerAfter, 'after');
+        });
+        
+        thresholdInput.addEventListener('input', () => {
+            thresholdValue.textContent = thresholdInput.value;
+        });
+
+        analyzeButton.addEventListener('click', () => {
+            analyzeButton.disabled = true;
+            loadingSpinner.classList.remove('hidden');
+            buttonText.textContent = 'Comparing...';
+            resultsSection.classList.add('hide');
+
+            const imgBefore = new Image();
+            imgBefore.src = imagePreviewBefore.src;
+            const imgAfter = new Image();
+            imgAfter.src = imagePreviewAfter.src;
+
+            let imagesLoaded = 0;
+            const checkAndCompare = () => {
+                imagesLoaded++;
+                if (imagesLoaded === 2) {
+                    compareImages(imgBefore, imgAfter);
+                }
+            };
+
+            imgBefore.onload = checkAndCompare;
+            imgAfter.onload = checkAndCompare;
+
+            // Handle potential errors for images that fail to load
+            imgBefore.onerror = imgAfter.onerror = () => {
+                resultText.textContent = 'Error loading one or both images. Please try again.';
+                resultsSection.classList.remove('hide');
+                analyzeButton.disabled = false;
+                loadingSpinner.classList.add('hidden');
+                buttonText.textContent = 'Compare Images';
+            };
+        });
+
+        function compareImages(imgBefore, imgAfter) {
+            const threshold = parseInt(thresholdInput.value, 10);
+            const minArea = parseInt(minAreaInput.value, 10);
+            
+            const width = Math.min(imgBefore.width, imgAfter.width);
+            const height = Math.min(imgBefore.height, imgAfter.height);
+
+            const canvasBefore = document.createElement('canvas');
+            const ctxBefore = canvasBefore.getContext('2d');
+            canvasBefore.width = width;
+            canvasBefore.height = height;
+            ctxBefore.drawImage(imgBefore, 0, 0, width, height);
+            const dataBefore = ctxBefore.getImageData(0, 0, width, height).data;
+
+            const canvasAfter = document.createElement('canvas');
+            const ctxAfter = canvasAfter.getContext('2d');
+            canvasAfter.width = width;
+            canvasAfter.height = height;
+            ctxAfter.drawImage(imgAfter, 0, 0, width, height);
+            const dataAfter = ctxAfter.getImageData(0, 0, width, height).data;
+
+            const diffCanvasData = new Uint8ClampedArray(width * height * 4);
+            const diffMap = new Array(width * height).fill(0); // 1 for changed, 0 for not
+
+            for (let i = 0; i < dataBefore.length; i += 4) {
+                const rDiff = Math.abs(dataBefore[i] - dataAfter[i]);
+                const gDiff = Math.abs(dataBefore[i + 1] - dataAfter[i + 1]);
+                const bDiff = Math.abs(dataBefore[i + 2] - dataAfter[i + 2]);
+                const avgDiff = (rDiff + gDiff + bDiff) / 3;
+
+                if (avgDiff > threshold) {
+                    diffMap[i / 4] = 1;
+                }
+            }
+
+            diffCanvas.width = width;
+            diffCanvas.height = height;
+            const ctxDiff = diffCanvas.getContext('2d');
+            const visited = new Array(width * height).fill(false);
+            const defects = [];
+            let pixelCount = 0;
+
+            for (let i = 0; i < diffMap.length; i++) {
+                if (diffMap[i] === 1 && !visited[i]) {
+                    const blob = [];
+                    const queue = [i];
+                    visited[i] = true;
+
+                    while (queue.length > 0) {
+                        const currentIdx = queue.shift();
+                        const x = currentIdx % width;
+                        const y = Math.floor(currentIdx / width);
+                        blob.push(currentIdx);
+                        pixelCount++;
+
+                        const neighbors = [
+                            y * width + (x - 1), (y - 1) * width + x, (y + 1) * width + x, y * width + (x + 1),
+                            (y - 1) * width + (x - 1), (y - 1) * width + (x + 1), (y + 1) * width + (x - 1), (y + 1) * width + (x + 1)
+                        ];
+
+                        neighbors.forEach(neighborIdx => {
+                            if (neighborIdx >= 0 && neighborIdx < diffMap.length && diffMap[neighborIdx] === 1 && !visited[neighborIdx]) {
+                                visited[neighborIdx] = true;
+                                queue.push(neighborIdx);
+                            }
+                        });
+                    }
+
+                    if (blob.length >= minArea) {
+                        defects.push(blob);
+                    }
+                }
+            }
+
+            if (defects.length > 0) {
+                defects.forEach(blob => {
+                    blob.forEach(idx => {
+                        const pixelIdx = idx * 4;
+                        diffCanvasData[pixelIdx] = 255;
+                        diffCanvasData[pixelIdx + 1] = 0;
+                        diffCanvasData[pixelIdx + 2] = 0;
+                        diffCanvasData[pixelIdx + 3] = 255;
+                    });
+                });
+            }
+
+            const diffImageData = new ImageData(diffCanvasData, width, height);
+            ctxDiff.putImageData(diffImageData, 0, 0);
+
+            let message = '';
+            if (defects.length === 0) {
+                message = "No significant changes detected between the two images that meet the minimum area requirement.";
+            } else {
+                message = `Found ${defects.length} defect(s) highlighted in red.`;
+            }
+            resultText.textContent = message;
+            
+            resultsSection.classList.remove('hide');
+            analyzeButton.disabled = false;
+            loadingSpinner.classList.add('hidden');
+            buttonText.textContent = 'Compare Images';
+        }
+
     </script>
 </body>
 </html>
