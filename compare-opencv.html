@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Defect Scanner</title>
+    <title>Defect Scanner - Comparison</title>
+
     <!-- SEO and Metadata -->
-    <meta name="description" content="Analyze images for defects by detecting changes and anomalies within a single image. Adjust parameters for precise results.">
+    <meta name="description" content="Analyze images for defects by detecting changes and anomalies. Adjust parameters for precise results.">
     <meta property="og:title" content="Defect Scanner - Comparison-Based Analysis">
     <meta property="og:description" content="Analyze single images for defects by detecting internal changes and anomalies.">
     <meta property="og:type" content="website">
@@ -34,90 +35,137 @@
     }
     </script>
     
-    <!-- Link to the external CSS file -->
-    <link rel="stylesheet" href="style.css">
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+            @apply bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200;
+        }
+        body.dark-mode .bg-white {
+            @apply bg-gray-800;
+        }
+        body.dark-mode .text-gray-800 {
+            @apply text-gray-200;
+        }
+        body.dark-mode .border-gray-300 {
+            @apply border-gray-600;
+        }
+        body.dark-mode .bg-gray-50 {
+            @apply bg-gray-700;
+        }
+        body.dark-mode .bg-gray-200 {
+            @apply bg-gray-700;
+        }
+        .text-placeholder {
+            @apply text-gray-400 dark:text-gray-500;
+        }
+    </style>
     <!-- Link to the OpenCV.js library from a CDN -->
     <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
 </head>
 
-<body>
-    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5.5 0 01-9 0zM18.894 6.182a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.06l1.59-1.591zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.83 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.06 1.06l1.59 1.591zM12 18.75a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zM4.929 17.83a.75.75 0 001.06 1.06l1.591-1.59a.75.75 0 10-1.06-1.06l-1.59 1.591zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM6.182 6.182a.75.75 0 00-1.06-1.06l-1.59 1.591a.75.75 0 101.06 1.06l1.591-1.59z" />
-        </svg>
-    </button>
-    <div class="container compare-container">
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+    <div class="fixed top-4 right-4 z-50">
+        <button id="theme-toggle" class="p-2 rounded-full shadow-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 fill-current">
+                <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5.5 0 01-9 0zM18.894 6.182a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.06l1.59-1.591zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.83 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.06 1.06l1.59 1.591zM12 18.75a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zM4.929 17.83a.75.75 0 001.06 1.06l1.591-1.59a.75.75 0 10-1.06-1.06l-1.59 1.591zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM6.182 6.182a.75.75 0 00-1.06-1.06l-1.59 1.591a.75.75 0 101.06 1.06l1.591-1.59z" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container mx-auto p-4 md:p-8 flex flex-col items-center max-w-4xl min-h-screen">
         <!-- Back Button -->
-        <button onclick="window.location.href='index.html'">
+        <button onclick="window.location.href='index.html'" class="w-full text-center px-6 py-2 mt-4 text-sm font-semibold text-white bg-indigo-500 rounded-lg shadow-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
             Back to Main Menu
         </button>
-        <div class="sidebar compare-card">
-            <h1 class="title">Defect Scanner</h1>
         
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mt-8 w-full transition-colors duration-300">
+            <h1 class="text-3xl font-bold text-center mb-2">Defect Scanner</h1>
+            <h2 class="text-xl text-center text-gray-600 dark:text-gray-400 mb-6">Comparison-Based Analysis</h2>
+            
             <!-- Splash Image -->
-            <img src="image/main-app-splash.jpg" alt="Defect Scanner - AI Image Quality Control" style="width: 100%; height: auto; border-radius: 8px; margin: 20px 0;">
-        
+            <img src="https://digitalchaos68.github.io/AIimagescan/image/main-app-splash.jpg" alt="Defect Scanner - AI Image Quality Control" class="w-full h-auto rounded-xl shadow-inner mb-6">
 
-            <p class="subtitle">Upload an image and set parameters to find surface defects.</p>
-            <div class="input-group">
-                <label for="imageInput" class="block text-sm font-medium mb-1">Upload Image</label>
-                <input type="file" id="imageInput" accept="image/*" class="w-full text-sm">
-            </div>
+            <p class="text-center text-gray-700 dark:text-gray-300 mb-6">
+                Upload an image and set parameters to find surface defects by analyzing changes and anomalies.
+            </p>
 
-            <hr class="my-4 border-t border-gray-300 dark:border-gray-600">
-            
-            <div class="input-group">
-                <label for="minAreaInput" class="block text-sm font-medium mb-1">Min Defect Area</label>
-                <input type="number" id="minAreaInput" value="2000" min="1" class="w-full px-2 py-1 border rounded-md">
+            <!-- Image Upload Input -->
+            <div class="mb-4">
+                <label for="imageInput" class="block text-sm font-semibold mb-2">Upload Image</label>
+                <input type="file" id="imageInput" accept="image/*" class="w-full text-sm rounded-lg border-2 border-gray-300 dark:border-gray-600 p-2 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
 
-            <div class="input-group">
-                <label for="densityThresholdInput" class="block text-sm font-medium">Density Threshold</label>
-                <input type="range" id="densityThresholdInput" value="100" min="1" max="255" step="1">
-                <div class="value-display" id="densityThresholdValue">100</div>
+            <!-- Parameters Section -->
+            <hr class="my-6 border-t border-gray-300 dark:border-gray-600">
+            <div id="parameters">
+                <h3 class="text-xl font-semibold mb-4">Detection Parameters</h3>
+                <div class="space-y-4">
+                    <div class="input-group">
+                        <label for="minAreaInput" class="block text-sm font-semibold mb-1">Min. Defect Area (pixels)</label>
+                        <input type="number" id="minAreaInput" value="2000" min="1" class="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="densityThresholdInput" class="block text-sm font-semibold mb-1">Density Threshold</label>
+                        <input type="range" id="densityThresholdInput" value="100" min="1" max="255" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                        <div class="value-display text-xs text-right text-gray-500 dark:text-gray-400 mt-1" id="densityThresholdValue">100</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="minRatioInput" class="block text-sm font-semibold mb-1">Min. Aspect Ratio</label>
+                        <input type="range" id="minRatioInput" value="1.0" min="0.1" max="1.0" step="0.1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                        <div class="value-display text-xs text-right text-gray-500 dark:text-gray-400 mt-1" id="minRatioValue">1.0</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="maxRatioInput" class="block text-sm font-semibold mb-1">Max. Aspect Ratio</label>
+                        <input type="range" id="maxRatioInput" value="10.0" min="1.0" max="10.0" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                        <div class="value-display text-xs text-right text-gray-500 dark:text-gray-400 mt-1" id="maxRatioValue">10.0</div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="input-group">
-                <label for="minRatioInput" class="block text-sm font-medium">Min Aspect Ratio</label>
-                <input type="range" id="minRatioInput" value="1.0" min="0.1" max="1.0" step="0.1">
-                <div class="value-display" id="minRatioValue">1.0</div>
-            </div>
-            
-            <div class="input-group">
-                <label for="maxRatioInput" class="block text-sm font-medium">Max Aspect Ratio</label>
-                <input type="range" id="maxRatioInput" value="10.0" min="1.0" max="10.0" step="0.5">
-                <div class="value-display" id="maxRatioValue">10.0</div>
-            </div>
-            
-            <button id="scanButton" class="btn primary-btn mt-4">Check for Defect</button>
-            <p id="loadingStatus" class="status-message">Please upload an image to begin.</p>
+
+            <!-- Scan Button -->
+            <button id="scanButton" class="w-full px-6 py-3 mt-6 text-lg font-bold text-white bg-indigo-600 rounded-xl shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
+                Check for Defect
+            </button>
+            <p id="loadingStatus" class="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                Please upload an image to begin.
+            </p>
         </div>
-        
-        <div class="main-content">
-            <div class="image-display compare-card" id="image-container">
+
+        <!-- Image and Results Container -->
+        <div id="imageAndResultsContainer" class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mt-8 w-full flex flex-col items-center min-h-[400px] transition-colors duration-300">
+            <h2 class="text-2xl font-bold mb-4">Image Preview & Results</h2>
+            <div id="image-display" class="w-full bg-gray-100 dark:bg-gray-700 rounded-xl p-4 flex justify-center items-center min-h-[300px] text-gray-500 dark:text-gray-400 text-center relative overflow-hidden">
                 <p class="text-placeholder">Image preview will appear here.</p>
             </div>
-            
-            <div class="results-section compare-card" id="results-container">
-                <h2 class="section-title">Scan Results</h2>
-                <p>Results will be displayed here after scanning.</p>
+            <div id="results-display" class="w-full mt-6">
+                <!-- Results will be injected here -->
             </div>
         </div>
     </div>
 
     <script>
-        let isCvReady = false; // Flag to prevent multiple initializations
-        
+        let isCvReady = false;
+        let originalImage = null;
+
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+
         // Check if OpenCV.js is ready
         function onOpenCvReady() {
-            // This flag prevents the function from running more than once
-            // in case the script onload event fires multiple times.
             if (isCvReady) {
                 return;
             }
             isCvReady = true;
 
-            // Load a default image for a better user experience
             const initialImage = new Image();
             initialImage.onload = () => {
                 const canvas = document.createElement('canvas');
@@ -125,26 +173,21 @@
                 canvas.height = initialImage.height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(initialImage, 0, 0);
-                document.getElementById('image-container').innerHTML = '';
-                document.getElementById('image-container').appendChild(canvas);
+                
+                const imageDisplayDiv = document.getElementById('image-display');
+                imageDisplayDiv.innerHTML = '';
+                imageDisplayDiv.appendChild(canvas);
+                
                 document.getElementById('loadingStatus').textContent = 'OpenCV.js loaded. Ready to scan.';
             };
             initialImage.src = 'https://placehold.co/800x600/e0e0e0/ffffff?text=Upload+Image+Here';
         }
         
-        // General page logic
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        themeToggleBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-        });
-
         const imageInput = document.getElementById('imageInput');
         const scanButton = document.getElementById('scanButton');
-        const imageContainer = document.getElementById('image-container');
-        const resultsContainer = document.getElementById('results-container');
+        const imageDisplay = document.getElementById('image-display');
+        const resultsDisplay = document.getElementById('results-display');
         const loadingStatus = document.getElementById('loadingStatus');
-
-        let originalImage = null;
 
         imageInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -159,8 +202,9 @@
                         canvas.height = img.height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0);
-                        imageContainer.innerHTML = '';
-                        imageContainer.appendChild(canvas);
+                        
+                        imageDisplay.innerHTML = '';
+                        imageDisplay.appendChild(canvas);
                         loadingStatus.textContent = 'Image loaded. Click "Check for Defect" to scan.';
                         scanButton.disabled = false;
                     };
@@ -177,9 +221,8 @@
             }
 
             loadingStatus.textContent = 'Scanning for defects...';
-            resultsContainer.innerHTML = `<h2 class="section-title">Scan Results</h2><div class="loader"></div>`;
+            resultsDisplay.innerHTML = `<h3 class="text-xl font-semibold mb-4 text-center">Scan Results</h3><div class="flex justify-center items-center h-24"><div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div></div>`;
 
-            // Debounce or add a small delay to show the loading state
             setTimeout(() => {
                 detectDefects(originalImage);
             }, 100);
@@ -191,7 +234,6 @@
                 return;
             }
             
-            // Clean up old mats to prevent memory leaks
             let src = cv.imread(img);
             let gray = new cv.Mat();
             let blur = new cv.Mat();
@@ -204,33 +246,28 @@
             let contours = new cv.MatVector();
             let contoursFinal = new cv.MatVector();
             let hierarchyFinal = new cv.Mat();
-            let defectRects = []; // Array to store all defect bounding boxes
+            let defectRects = [];
             
             try {
-                // Pre-processing
                 cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-                cv.bitwise_not(gray, gray); // Invert colors to find black defects
+                cv.bitwise_not(gray, gray);
                 cv.GaussianBlur(gray, blur, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
                 cv.adaptiveThreshold(blur, binary, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2);
 
-                // Watershed analysis for defect separation
                 cv.distanceTransform(binary, distMap, cv.DIST_L2, 5);
                 cv.normalize(distMap, distMapNorm, 0, 255, cv.NORM_MINMAX, cv.CV_8U);
 
                 let densityThreshold = parseInt(document.getElementById('densityThresholdInput').value);
                 cv.threshold(distMapNorm, thresholdedDensity, densityThreshold, 255, cv.THRESH_BINARY);
                 
-                // Prepare markers for watershed
                 cv.findContours(thresholdedDensity, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
                 for (let i = 0; i < contours.size(); ++i) {
                     cv.drawContours(markers, contours, i, new cv.Scalar(i + 1), -1);
                 }
                 
-                // Convert src to RGB for watershed and apply the algorithm
                 cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
                 cv.watershed(src, markers);
 
-                // Final processing of markers to find defects
                 let defectCount = 0;
                 let minArea = parseInt(document.getElementById('minAreaInput').value);
 
@@ -247,80 +284,59 @@
                         let maxRatio = parseFloat(document.getElementById('maxRatioInput').value);
 
                         if (ratio >= minRatio && ratio <= maxRatio) {
-                            defectRects.push(rect); // Store the bounding box
+                            defectRects.push(rect);
                             defectCount++;
                         }
                     }
                     contour.delete();
                 }
 
-                // Debugging step: show the intermediate images with labels
-                const intermediateImagesContainer = document.createElement('div');
-                intermediateImagesContainer.classList.add('intermediate-images');
-                
-                const createLabeledCanvas = (mat, label) => {
-                    const container = document.createElement('div');
-                    const p = document.createElement('p');
-                    p.textContent = label;
-                    const canvas = document.createElement('canvas');
-                    cv.imshow(canvas, mat);
-                    container.appendChild(p);
-                    container.appendChild(canvas);
-                    intermediateImagesContainer.appendChild(container);
-                };
+                const resultsDiv = document.createElement('div');
+                resultsDiv.className = 'w-full space-y-4';
 
-                createLabeledCanvas(gray, 'Grayscale Image');
-                createLabeledCanvas(blur, 'Blurred Image');
-                createLabeledCanvas(binary, 'Binary Image');
-                createLabeledCanvas(distMapNorm, 'Distance Map');
-                createLabeledCanvas(thresholdedDensity, 'Thresholded Density Map');
-                
-                resultsContainer.appendChild(intermediateImagesContainer);
+                const resultText = document.createElement('p');
+                resultText.className = 'text-center text-lg font-bold';
+                if (defectCount > 0) {
+                    resultText.textContent = `Found ${defectCount} potential defect(s).`;
+                    resultText.classList.add('text-red-500');
+                } else {
+                    resultText.textContent = `No defects found.`;
+                    resultText.classList.add('text-green-500');
+                }
+                resultsDiv.appendChild(resultText);
 
-                // Draw the final image with the bounding boxes
+                const finalImageTitle = document.createElement('h4');
+                finalImageTitle.textContent = "Final Result";
+                finalImageTitle.className = 'text-center text-md font-semibold mt-4 mb-2';
+                resultsDiv.appendChild(finalImageTitle);
+
                 const canvasOutput = document.createElement('canvas');
                 canvasOutput.width = img.width;
                 canvasOutput.height = img.height;
                 const ctx = canvasOutput.getContext('2d');
                 
-                // Draw the original image first
                 ctx.drawImage(img, 0, 0);
                 
-                // Draw the rectangles on top of the original image
                 for (let i = 0; i < defectRects.length; i++) {
                     let rect = defectRects[i];
                     ctx.beginPath();
-                    ctx.lineWidth = "5";
+                    ctx.lineWidth = 5;
                     ctx.strokeStyle = "red";
                     ctx.rect(rect.x, rect.y, rect.width, rect.height);
                     ctx.stroke();
                 }
+                canvasOutput.className = 'w-full max-w-full h-auto rounded-lg shadow-md';
+                resultsDiv.appendChild(canvasOutput);
 
-                // Put the canvas in the resultsContainer
-                resultsContainer.appendChild(canvasOutput);
+                resultsDisplay.innerHTML = '';
+                resultsDisplay.appendChild(resultsDiv);
                 
-                // Add a title for the final image
-                const finalImageTitle = document.createElement('p');
-                finalImageTitle.textContent = "Final Result";
-                resultsContainer.insertBefore(finalImageTitle, canvasOutput);
-
-                const resultText = document.createElement('p');
-                if (defectCount > 0) {
-                    resultText.textContent = `Found ${defectCount} potential defect(s).`;
-                    resultText.style.color = 'red';
-                } else {
-                    resultText.textContent = `No defects found.`;
-                    resultText.style.color = 'green';
-                }
-                resultsContainer.prepend(resultText);
-
                 loadingStatus.textContent = 'Scan complete.';
 
             } catch (err) {
                 loadingStatus.textContent = 'An error occurred during scanning: ' + err;
                 console.error(err);
             } finally {
-                // Proper memory management
                 src.delete(); gray.delete(); blur.delete(); binary.delete();
                 distMap.delete(); distMapNorm.delete(); thresholdedDensity.delete();
                 markers.delete(); hierarchy.delete(); contours.delete();
@@ -335,7 +351,6 @@
         document.getElementById('minRatioInput').addEventListener('input', (e) => {
             document.getElementById('minRatioValue').textContent = e.target.value;
         });
-
         document.getElementById('maxRatioInput').addEventListener('input', (e) => {
             document.getElementById('maxRatioValue').textContent = e.target.value;
         });
