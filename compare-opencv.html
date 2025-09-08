@@ -7,15 +7,15 @@
     <title>Defect Scanner - Comparison-Based Analysis</title>
     
     <!-- SEO and Metadata -->
-    <meta name="description" content="Compare two images to detect defects and anomalies. Adjust the sensitivity for precise results.">
+    <meta name="description" content="Analyze images for defects by detecting changes and anomalies within a single image. Adjust parameters for precise results.">
     <meta property="og:title" content="Defect Scanner - Comparison-Based Analysis">
-    <meta property="og:description" content="Compare two images to find defects.">
+    <meta property="og:description" content="Analyze single images for defects by detecting internal changes and anomalies.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://digitalchaos68.github.io/AIimagescan/compare-opencv.html">
     <meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/main-app-splash.jpg">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Defect Scanner - Comparison-Based Analysis">
-    <meta name="twitter:description" content="Compare two images to find defects using an AI analysis.">
+    <meta name="twitter:description" content="Scan a single image for defects using a change-based AI analysis.">
     <meta name="twitter:image" content="https://digitalchaos68.github.io/AIimagescan/image/main-app-splash.jpg">
     <link rel="canonical" href="https://digitalchaos64.github.io/AIimagescan/compare-opencv.html">
     <script type="application/ld+json">
@@ -23,7 +23,7 @@
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "Defect Scanner",
-      "description": "AI-powered tool for finding defects and anomalies by comparing two images.",
+      "description": "AI-powered tool for finding defects and anomalies in a single image.",
       "applicationCategory": "Utilities",
       "operatingSystem": "All",
       "offers": {
@@ -55,26 +55,17 @@
         </button>
 
         <h1>Defect Scanner</h1>
-        <h2>Based on Image Comparison</h2>
+        <h2>Based on Changes in Image</h2>
         
         <!-- Splash Image -->
         <img src="image/main-app-splash.jpg" alt="Defect Scanner - AI Image Quality Control" style="width: 100%; height: auto; border-radius: 8px; margin: 20px 0;">
         
         <p>
-            Upload a reference image and a test image to scan for defects.
+            Upload an image from your gallery or take a new photo to scan for defects.
         </p>
 
-        <!-- Image Upload Inputs -->
-        <div class="image-upload-container">
-            <div>
-                <label for="referenceImageInput">Reference Image:</label>
-                <input type="file" id="referenceImageInput" accept="image/*">
-            </div>
-            <div>
-                <label for="testImageInput">Test Image:</label>
-                <input type="file" id="testImageInput" accept="image/*">
-            </div>
-        </div>
+        <!-- Image Upload Input -->
+        <input type="file" id="imageInput" accept="image/*">
         
         <!-- Loading Status -->
         <div id="loadingStatus" class="mt-4 text-center text-sm font-medium text-gray-500">
@@ -82,17 +73,26 @@
         </div>
 
         <!-- Scan Button -->
-        <button id="compareButton" style="display: none;">
-            Compare Images
+        <button id="scanButton" style="display: none;">
+            Check Defect
         </button>
         
         <!-- Detection Parameters -->
         <div id="parameters" style="margin-top: 20px;">
             <h3>Detection Parameters</h3>
             <div>
-                <label for="thresholdInput">Detection Threshold:</label>
-                <input type="range" id="thresholdInput" value="50" min="0" max="255" step="1">
-                <span id="thresholdValue">50</span>
+                <label for="minAreaInput">Min. Defect Area:</label>
+                <input type="number" id="minAreaInput" value="500" min="0">
+            </div>
+            <div>
+                <label for="minRatioInput">Min. Aspect Ratio:</label>
+                <input type="range" id="minRatioInput" value="0.1" min="0" max="1" step="0.05">
+                <span id="minRatioValue">0.1</span>
+            </div>
+            <div>
+                <label for="maxRatioInput">Max. Aspect Ratio:</label>
+                <input type="range" id="maxRatioInput" value="10" min="1" max="20" step="0.5">
+                <span id="maxRatioValue">10</span>
             </div>
         </div>
 
@@ -104,7 +104,7 @@
     <script src="compare-opencv.js"></script>
     <script>
         function onOpenCvReady() {
-            document.getElementById('loadingStatus').textContent = 'OpenCV.js is ready. Select two images to begin.';
+            document.getElementById('loadingStatus').textContent = 'OpenCV.js is ready. Select an image to begin.';
             console.log('OpenCV.js is ready.');
         }
     </script>
