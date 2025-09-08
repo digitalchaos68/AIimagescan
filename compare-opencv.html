@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/manifest.json">
-    <title>Defect Scanner - Comparison-Based Analysis</title>
-    
+    <title>Defect Scanner</title>
     <!-- SEO and Metadata -->
     <meta name="description" content="Analyze images for defects by detecting changes and anomalies within a single image. Adjust parameters for precise results.">
     <meta property="og:title" content="Defect Scanner - Comparison-Based Analysis">
@@ -41,72 +39,215 @@
     <!-- Link to the OpenCV.js library from a CDN -->
     <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
 </head>
-<body>
-    <!-- Dark mode toggle button -->
-    <div class="toggle-container">
-        <button id="theme-toggle" class="theme-toggle-button">Toggle Dark Mode</button>
-    </div>
 
-    <!-- Main Container -->
-    <div class="container">
+<body>
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.182a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.06l1.59-1.591zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.83 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.06 1.06l1.59 1.591zM12 18.75a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zM4.929 17.83a.75.75 0 001.06 1.06l1.591-1.59a.75.75 0 10-1.06-1.06l-1.59 1.591zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM6.182 6.182a.75.75 0 00-1.06-1.06l-1.59 1.591a.75.75 0 101.06 1.06l1.591-1.59z" />
+        </svg>
+    </button>
+    <div class="container compare-container">
         <!-- Back Button -->
         <button onclick="window.location.href='index.html'">
             Back to Main Menu
         </button>
+        <div class="sidebar compare-card">
+            <h1 class="title">Defect Scanner</h1>
+        
+	        <!-- Splash Image -->
+	        <img src="image/main-app-splash.jpg" alt="Defect Scanner - AI Image Quality Control" style="width: 100%; height: auto; border-radius: 8px; margin: 20px 0;">
+        
 
-        <h1>Defect Scanner</h1>
-        <h2>Based on Changes in Image</h2>
-        
-        <!-- Splash Image -->
-        <img src="image/main-app-splash.jpg" alt="Defect Scanner - AI Image Quality Control" style="width: 100%; height: auto; border-radius: 8px; margin: 20px 0;">
-        
-        <p>
-            Upload an image from your gallery or take a new photo to scan for defects.
-        </p>
+            <p class="subtitle">Upload an image and set parameters to find surface defects.</p>
+            <div class="input-group">
+                <label for="imageInput" class="block text-sm font-medium mb-1">Upload Image</label>
+                <input type="file" id="imageInput" accept="image/*" class="w-full text-sm">
+            </div>
 
-        <!-- Image Upload Input -->
-        <input type="file" id="imageInput" accept="image/*">
-        
-        <!-- Loading Status -->
-        <div id="loadingStatus" class="mt-4 text-center text-sm font-medium text-gray-500">
-            Ready to scan.
+            <hr class="my-4 border-t border-gray-300 dark:border-gray-600">
+            
+            <div class="input-group">
+                <label for="minAreaInput" class="block text-sm font-medium mb-1">Min Defect Area</label>
+                <input type="number" id="minAreaInput" value="500" min="1" class="w-full px-2 py-1 border rounded-md">
+            </div>
+            
+            <div class="input-group">
+                <label for="minRatioInput" class="block text-sm font-medium">Min Aspect Ratio</label>
+                <input type="range" id="minRatioInput" value="0.5" min="0.1" max="1.0" step="0.1">
+                <div class="value-display" id="minRatioValue">0.5</div>
+            </div>
+            
+            <div class="input-group">
+                <label for="maxRatioInput" class="block text-sm font-medium">Max Aspect Ratio</label>
+                <input type="range" id="maxRatioInput" value="5.0" min="1.0" max="10.0" step="0.5">
+                <div class="value-display" id="maxRatioValue">5.0</div>
+            </div>
+            
+            <button id="scanButton" class="btn primary-btn mt-4">Check for Defect</button>
+            <p id="loadingStatus" class="status-message">Please upload an image to begin.</p>
         </div>
-
-        <!-- Scan Button -->
-        <button id="scanButton" style="display: none;">
-            Check Defect
-        </button>
         
-        <!-- Detection Parameters -->
-        <div id="parameters" style="margin-top: 20px;">
-            <h3>Detection Parameters</h3>
-            <div>
-                <label for="minAreaInput">Min. Defect Area:</label>
-                <input type="number" id="minAreaInput" value="500" min="0">
+        <div class="main-content">
+            <div class="image-display compare-card" id="image-container">
+                <p class="text-placeholder">Image preview will appear here.</p>
             </div>
-            <div>
-                <label for="minRatioInput">Min. Aspect Ratio:</label>
-                <input type="range" id="minRatioInput" value="0.1" min="0" max="1" step="0.05">
-                <span id="minRatioValue">0.1</span>
-            </div>
-            <div>
-                <label for="maxRatioInput">Max. Aspect Ratio:</label>
-                <input type="range" id="maxRatioInput" value="10" min="1" max="20" step="0.5">
-                <span id="maxRatioValue">10</span>
+            
+            <div class="results-section compare-card" id="results-container">
+                <h2 class="section-title">Scan Results</h2>
+                <p>Results will be displayed here after scanning.</p>
             </div>
         </div>
-
-        <!-- Image and Results Container -->
-        <div id="image-container"></div>
-        <div id="results-container"></div>
     </div>
-    
-    <script src="compare-opencv.js"></script>
+
+    <!-- OpenCV.js script -->
+    <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
     <script>
+        // Check if OpenCV.js is ready
         function onOpenCvReady() {
-            document.getElementById('loadingStatus').textContent = 'OpenCV.js is ready. Select an image to begin.';
-            console.log('OpenCV.js is ready.');
+            // Load a default image for a better user experience
+            const initialImage = new Image();
+            initialImage.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = initialImage.width;
+                canvas.height = initialImage.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(initialImage, 0, 0);
+                document.getElementById('image-container').innerHTML = '';
+                document.getElementById('image-container').appendChild(canvas);
+                document.getElementById('loadingStatus').textContent = 'OpenCV.js loaded. Ready to scan.';
+            };
+            initialImage.src = 'https://placehold.co/800x600/e0e0e0/ffffff?text=Upload+Image+Here';
         }
+        
+        // General page logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // The following logic would be in compare-opencv.js, but is included here for simplicity
+        const imageInput = document.getElementById('imageInput');
+        const scanButton = document.getElementById('scanButton');
+        const imageContainer = document.getElementById('image-container');
+        const resultsContainer = document.getElementById('results-container');
+        const loadingStatus = document.getElementById('loadingStatus');
+
+        let originalImage = null;
+
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        originalImage = img;
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        imageContainer.innerHTML = '';
+                        imageContainer.appendChild(canvas);
+                        loadingStatus.textContent = 'Image loaded. Click "Check for Defect" to scan.';
+                        scanButton.disabled = false;
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        scanButton.addEventListener('click', () => {
+            if (!originalImage) {
+                loadingStatus.textContent = 'Please upload an image first.';
+                return;
+            }
+
+            loadingStatus.textContent = 'Scanning for defects...';
+            resultsContainer.innerHTML = `<h2 class="section-title">Scan Results</h2><div class="loader"></div>`;
+
+            // Debounce or add a small delay to show the loading state
+            setTimeout(() => {
+                detectDefects(originalImage);
+            }, 100);
+        });
+
+        function detectDefects(img) {
+            if (!cv) {
+                loadingStatus.textContent = 'OpenCV.js is not loaded yet.';
+                return;
+            }
+
+            let src = cv.imread(img);
+            let gray = new cv.Mat();
+            cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+
+            // Invert the colors for better blob detection on dark defects
+            cv.bitwise_not(gray, gray);
+
+            // Apply a blur to reduce noise
+            let blur = new cv.Mat();
+            cv.GaussianBlur(gray, blur, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
+
+            // Binarize the image to find defects
+            let binary = new cv.Mat();
+            let minArea = parseInt(document.getElementById('minAreaInput').value);
+            cv.threshold(blur, binary, 50, 255, cv.THRESH_BINARY);
+
+            let contours = new cv.MatVector();
+            let hierarchy = new cv.Mat();
+            cv.findContours(binary, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+            let defectCount = 0;
+            let finalImage = src.clone();
+
+            for (let i = 0; i < contours.size(); ++i) {
+                let contour = contours.get(i);
+                let area = cv.contourArea(contour);
+
+                if (area > minArea) {
+                    let rect = cv.boundingRect(contour);
+                    let ratio = rect.width / rect.height;
+                    let minRatio = parseFloat(document.getElementById('minRatioInput').value);
+                    let maxRatio = parseFloat(document.getElementById('maxRatioInput').value);
+
+                    if (ratio >= minRatio && ratio <= maxRatio) {
+                        cv.rectangle(finalImage, new cv.Point(rect.x, rect.y), new cv.Point(rect.x + rect.width, rect.y + rect.height), [255, 0, 0, 255], 3);
+                        defectCount++;
+                    }
+                }
+                contour.delete();
+            }
+
+            resultsContainer.innerHTML = '';
+            const canvasOutput = document.createElement('canvas');
+            cv.imshow(canvasOutput, finalImage);
+            resultsContainer.appendChild(canvasOutput);
+
+            const resultText = document.createElement('p');
+            if (defectCount > 0) {
+                resultText.textContent = `Found ${defectCount} potential defect(s).`;
+                resultText.style.color = 'red';
+            } else {
+                resultText.textContent = `No defects found.`;
+                resultText.style.color = 'green';
+            }
+            resultsContainer.prepend(resultText);
+
+            loadingStatus.textContent = 'Scan complete.';
+
+            src.delete(); gray.delete(); blur.delete(); binary.delete(); contours.delete(); hierarchy.delete();
+        }
+
+        // Update range slider values
+        document.getElementById('minRatioInput').addEventListener('input', (e) => {
+            document.getElementById('minRatioValue').textContent = e.target.value;
+        });
+
+        document.getElementById('maxRatioInput').addEventListener('input', (e) => {
+            document.getElementById('maxRatioValue').textContent = e.target.value;
+        });
     </script>
 </body>
 </html>
