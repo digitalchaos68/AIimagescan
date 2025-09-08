@@ -14,6 +14,7 @@
     <meta property="og:url" content="https://digitalchaos68.github.io/AIimagescan/compare-app.html">
     <meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/compare-app-splash.jpg">
 
+
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Reference-Based Image Comparison">
     <meta name="twitter:description" content="Find and analyze defects in images using advanced AI algorithms.">
@@ -80,14 +81,14 @@
         }
     </style>
 </head>
-<body class="light-mode min-h-screen flex items-center justify-center p-4 relative">
+<body class="light-mode min-h-screen flex flex-col items-center justify-between p-4 relative">
 
     <!-- Theme Toggle Button -->
     <button id="theme-toggle" class="bg-gray-300">
         <span class="toggle-thumb"></span>
     </button>
 
-    <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-4xl">
+    <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-4xl mb-20 md:mb-24">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Reference-Based Image Comparison</h1>
         <p class="text-center text-gray-500 mb-8">Upload a reference image and a test image to find the differences.</p>
 
@@ -97,30 +98,33 @@
             <img src="image/compare-app-splash.jpg" alt="Image Comparison Placeholder" class="rounded-lg shadow-md mb-4">
             <p class="text-gray-600 text-lg">Upload your images above to begin the analysis.</p>
         </div>
+
         <!-- Image Upload Section -->
         <div id="upload-section" class="flex flex-col md:flex-row gap-6 mb-8">
             <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Reference Image</label>
-                <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-all cursor-pointer">
+                <div id="refDropZone" class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-all cursor-pointer">
                     <input type="file" id="referenceImageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                    <div class="text-gray-400">
+                    <div id="refPlaceholder" class="text-gray-400">
                         <svg class="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                             <path d="M28 8H12a2 2 0 00-2 2v16m16-4h-8m-4 0v-4m-4 4h-4m-4 0a2 2 0 01-2-2V10a2 2 0 012-2h12l-4 4h8a2 2 0 012 2v4a2 2 0 00-2 2h-8m-4 4v4m4 0h-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                         <p class="mt-2 text-sm">Drag and drop or click to upload</p>
                     </div>
+                    <img id="refPreview" src="#" alt="Reference Image Preview" class="hidden w-full h-auto max-h-48 object-contain rounded-lg">
                 </div>
             </div>
             <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Test Image</label>
-                <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-all cursor-pointer">
+                <div id="testDropZone" class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-all cursor-pointer">
                     <input type="file" id="testImageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                    <div class="text-gray-400">
+                    <div id="testPlaceholder" class="text-gray-400">
                         <svg class="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                             <path d="M28 8H12a2 2 0 00-2 2v16m16-4h-8m-4 0v-4m-4 4h-4m-4 0a2 2 0 01-2-2V10a2 2 0 012-2h12l-4 4h8a2 2 0 012 2v4a2 2 0 00-2 2h-8m-4 4v4m4 0h-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                         <p class="mt-2 text-sm">Drag and drop or click to upload</p>
                     </div>
+                    <img id="testPreview" src="#" alt="Test Image Preview" class="hidden w-full h-auto max-h-48 object-contain rounded-lg">
                 </div>
             </div>
         </div>
@@ -143,13 +147,13 @@
         <div id="resultsContainer" class="hidden">
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">Comparison Results</h2>
             <div id="imageContainer" class="flex flex-col md:flex-row justify-center items-center gap-6">
-                <!-- Image previews and difference canvas will be appended here -->
+                <!-- Image canvases will be appended here -->
             </div>
             <div id="summary" class="mt-8 text-center text-lg font-medium text-gray-700"></div>
         </div>
 
         <!-- Custom Modal -->
-        <div id="alertModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+        <div id="alertModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                 <div class="mt-3 text-center">
                     <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle"></h3>
@@ -165,6 +169,19 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="fixed bottom-0 left-0 right-0 z-40 bg-gray-800 bg-opacity-95 text-white shadow-lg p-4 flex flex-col md:flex-row justify-around items-center space-y-2 md:space-y-0 md:space-x-4">
+        <a href="index.html" class="w-full md:w-auto text-center px-6 py-3 bg-gray-700 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+            Back to Home
+        </a>
+        <a href="ai-based-detection.html" class="w-full md:w-auto text-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            AI-Based Detection
+        </a>
+        <a href="#" class="w-full md:w-auto text-center px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md cursor-default">
+            Reference-Based Comparison
+        </a>
     </div>
 
     <script>
@@ -232,6 +249,59 @@
         const splashScreen = document.getElementById('splash-screen');
         const sensitivityInput = document.getElementById('sensitivityInput');
         const sensitivityValue = document.getElementById('sensitivityValue');
+        
+        const refDropZone = document.getElementById('refDropZone');
+        const testDropZone = document.getElementById('testDropZone');
+        const refPreview = document.getElementById('refPreview');
+        const testPreview = document.getElementById('testPreview');
+        const refPlaceholder = document.getElementById('refPlaceholder');
+        const testPlaceholder = document.getElementById('testPlaceholder');
+
+        // Function to handle file processing and preview
+        const handleFile = (file, previewElement, placeholderElement) => {
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewElement.src = e.target.result;
+                previewElement.classList.remove('hidden');
+                placeholderElement.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        };
+        
+        // Event listeners for 'click to upload'
+        referenceImageInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0], refPreview, refPlaceholder);
+        });
+
+        testImageInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0], testPreview, testPlaceholder);
+        });
+
+        // Event listeners for drag and drop functionality
+        [refDropZone, testDropZone].forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('border-blue-500');
+            });
+            zone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                zone.classList.remove('border-blue-500');
+            });
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('border-blue-500');
+                const file = e.dataTransfer.files[0];
+                if (zone.id === 'refDropZone') {
+                    referenceImageInput.files = e.dataTransfer.files;
+                    handleFile(file, refPreview, refPlaceholder);
+                } else {
+                    testImageInput.files = e.dataTransfer.files;
+                    handleFile(file, testPreview, testPlaceholder);
+                }
+            });
+        });
 
         // Update the sensitivity value display
         sensitivityInput.addEventListener('input', (e) => {
@@ -270,60 +340,106 @@
                     loadingIndicator.classList.add('hidden');
                     return;
                 }
+                
+                // Create an off-screen canvas to get pixel data
+                const offscreenCanvas = document.createElement('canvas');
+                const offscreenCtx = offscreenCanvas.getContext('2d');
+                offscreenCanvas.width = refImage.width;
+                offscreenCanvas.height = refImage.height;
 
-                // Create a canvas for the reference image and test image
+                // Draw reference image and get pixel data
+                offscreenCtx.drawImage(refImage, 0, 0);
+                const refImageData = offscreenCtx.getImageData(0, 0, refImage.width, refImage.height);
+                
+                // Draw test image and get pixel data
+                offscreenCtx.drawImage(testImage, 0, 0);
+                const testImageData = offscreenCtx.getImageData(0, 0, testImage.width, testImage.height);
+
+                let totalDifferences = 0;
+                let foundDefects = [];
+                let visited = Array.from({ length: refImage.height }, () => Array(refImage.width).fill(false));
+
+                function isDifferent(x, y) {
+                    if (x < 0 || x >= refImage.width || y < 0 || y >= refImage.height) return false;
+                    const i = (y * refImage.width + x) * 4;
+                    const rRef = refImageData.data[i];
+                    const gRef = refImageData.data[i + 1];
+                    const bRef = refImageData.data[i + 2];
+                    const rTest = testImageData.data[i];
+                    const gTest = testImageData.data[i + 1];
+                    const bTest = testImageData.data[i + 2];
+                    const diff = Math.abs(rRef - rTest) + Math.abs(gRef - gTest) + Math.abs(bRef - bTest);
+                    return diff > sensitivityThreshold;
+                }
+                
+                for (let y = 0; y < refImage.height; y++) {
+                    for (let x = 0; x < refImage.width; x++) {
+                        if (isDifferent(x, y) && !visited[y][x]) {
+                            let minX = x, minY = y, maxX = x, maxY = y;
+                            const queue = [{ x, y }];
+                            visited[y][x] = true;
+
+                            while (queue.length > 0) {
+                                const { x: currentX, y: currentY } = queue.shift();
+                                totalDifferences++;
+
+                                minX = Math.min(minX, currentX);
+                                minY = Math.min(minY, currentY);
+                                maxX = Math.max(maxX, currentX);
+                                maxY = Math.max(maxY, currentY);
+
+                                const neighbors = [
+                                    { nx: currentX - 1, ny: currentY },
+                                    { nx: currentX + 1, ny: currentY },
+                                    { nx: currentX, ny: currentY - 1 },
+                                    { nx: currentX, ny: currentY + 1 },
+                                    // Diagonal neighbors
+                                    { nx: currentX - 1, ny: currentY - 1 },
+                                    { nx: currentX + 1, ny: currentY + 1 },
+                                    { nx: currentX - 1, ny: currentY + 1 },
+                                    { nx: currentX + 1, ny: currentY - 1 }
+                                ];
+
+                                neighbors.forEach(({ nx, ny }) => {
+                                    if (nx >= 0 && nx < refImage.width && ny >= 0 && ny < refImage.height && !visited[ny][nx] && isDifferent(nx, ny)) {
+                                        visited[ny][nx] = true;
+                                        queue.push({ x: nx, y: ny });
+                                    }
+                                });
+                            }
+                            // Store the bounding box for this isolated defect
+                            foundDefects.push({
+                                x: minX,
+                                y: minY,
+                                width: maxX - minX + 1,
+                                height: maxY - minY + 1
+                            });
+                        }
+                    }
+                }
+                
+                // Create a canvas for the test image to display it with the bounding boxes
+                const highlightedCanvas = document.createElement('canvas');
+                highlightedCanvas.width = testImage.width;
+                highlightedCanvas.height = testImage.height;
+                const highlightedCtx = highlightedCanvas.getContext('2d');
+                
+                // Draw the test image onto the canvas
+                highlightedCtx.drawImage(testImage, 0, 0);
+
+                // Draw a bounding box for each found defect
+                highlightedCtx.strokeStyle = 'red';
+                highlightedCtx.lineWidth = 2;
+                foundDefects.forEach(box => {
+                    highlightedCtx.strokeRect(box.x, box.y, box.width, box.height);
+                });
+
+                // Create a canvas for the reference image to display it
                 const canvasRef = document.createElement('canvas');
                 const ctxRef = canvasRef.getContext('2d');
                 canvasRef.width = refImage.width;
                 canvasRef.height = refImage.height;
                 ctxRef.drawImage(refImage, 0, 0);
-
-                const canvasTest = document.createElement('canvas');
-                const ctxTest = canvasTest.getContext('2d');
-                canvasTest.width = testImage.width;
-                canvasTest.height = testImage.height;
-                ctxTest.drawImage(testImage, 0, 0);
-
-                // Get pixel data
-                const refImageData = ctxRef.getImageData(0, 0, canvasRef.width, canvasRef.height).data;
-                const testImageData = ctxTest.getImageData(0, 0, canvasTest.width, canvasTest.height).data;
-
-                // Prepare canvas to draw highlighted differences
-                const highlightedCanvas = document.createElement('canvas');
-                const highlightedCtx = highlightedCanvas.getContext('2d');
-                highlightedCanvas.width = testImage.width;
-                highlightedCanvas.height = testImage.height;
-                // Draw the test image on the new canvas
-                highlightedCtx.drawImage(testImage, 0, 0);
-                
-                let differences = 0;
-                let totalPixels = canvasRef.width * canvasRef.height;
-
-                for (let i = 0; i < refImageData.length; i += 4) {
-                    const rRef = refImageData[i];
-                    const gRef = refImageData[i + 1];
-                    const bRef = refImageData[i + 2];
-                    const aRef = refImageData[i + 3];
-
-                    const rTest = testImageData[i];
-                    const gTest = testImageData[i + 1];
-                    const bTest = testImageData[i + 2];
-                    const aTest = testImageData[i + 3];
-
-                    // Simple difference check using the adjustable sensitivity threshold
-                    const diff = Math.abs(rRef - rTest) + Math.abs(gRef - gTest) + Math.abs(bRef - bTest);
-                    const alphaDiff = Math.abs(aRef - aTest);
-
-                    // If a significant difference is found, draw a semi-transparent red rectangle
-                    if (diff > sensitivityThreshold || alphaDiff > sensitivityThreshold) { 
-                        differences++;
-                        const x = (i / 4) % highlightedCanvas.width;
-                        const y = Math.floor((i / 4) / highlightedCanvas.width);
-
-                        highlightedCtx.fillStyle = 'rgba(255, 0, 0, 0.7)';
-                        highlightedCtx.fillRect(x, y, 1, 1);
-                    }
-                }
 
                 // Set up the layout
                 const refWrapper = document.createElement('div');
@@ -338,26 +454,25 @@
                 const highlightedWrapper = document.createElement('div');
                 highlightedWrapper.className = 'w-full md:w-1/2 flex flex-col items-center gap-2';
                 const highlightedHeading = document.createElement('h3');
-                highlightedHeading.textContent = 'Test Image with Differences';
+                highlightedHeading.textContent = 'Test Image with Defect(s)';
                 highlightedHeading.className = 'text-lg font-semibold text-gray-700';
                 highlightedWrapper.appendChild(highlightedHeading);
                 highlightedWrapper.appendChild(highlightedCanvas);
                 highlightedCanvas.className = 'w-full rounded-lg shadow-md';
 
-
                 imageContainer.appendChild(refWrapper);
                 imageContainer.appendChild(highlightedWrapper);
 
-
                 // Calculate and display summary
-                const differencePercentage = (differences / totalPixels) * 100;
-                summary.textContent = `Total different pixels: ${differences} (${differencePercentage.toFixed(2)}%)`;
+                const totalPixels = refImage.width * refImage.height;
+                const differencePercentage = (totalDifferences / totalPixels) * 100;
+                summary.innerHTML = `Found <span class="font-bold">${foundDefects.length}</span> defect(s) covering <span class="font-bold">${totalDifferences}</span> pixels (${differencePercentage.toFixed(2)}%)`;
                 
                 resultsContainer.classList.remove('hidden');
 
             } catch (error) {
                 console.error(error);
-                showModal('Analysis Failed', 'An error occurred while processing the images. Please try again.');
+                showModal('Analysis Failed', 'An error occurred while processing the images. Please ensure they are valid image files.');
             } finally {
                 loadingIndicator.classList.add('hidden');
             }
