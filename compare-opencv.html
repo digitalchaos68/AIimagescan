@@ -43,7 +43,7 @@
 <body>
     <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.182a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.06l1.59-1.591zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.83 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.06 1.06l1.59 1.591zM12 18.75a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zM4.929 17.83a.75.75 0 001.06 1.06l1.591-1.59a.75.75 0 10-1.06-1.06l-1.59 1.591zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM6.182 6.182a.75.75 0 00-1.06-1.06l-1.59 1.591a.75.75 0 101.06 1.06l1.591-1.59z" />
+            <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5.5 0 01-9 0zM18.894 6.182a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.06l1.59-1.591zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.83 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.06 1.06l1.59 1.591zM12 18.75a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zM4.929 17.83a.75.75 0 001.06 1.06l1.591-1.59a.75.75 0 10-1.06-1.06l-1.59 1.591zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM6.182 6.182a.75.75 0 00-1.06-1.06l-1.59 1.591a.75.75 0 101.06 1.06l1.591-1.59z" />
         </svg>
     </button>
     <div class="container compare-container">
@@ -68,19 +68,25 @@
             
             <div class="input-group">
                 <label for="minAreaInput" class="block text-sm font-medium mb-1">Min Defect Area</label>
-                <input type="number" id="minAreaInput" value="500" min="1" class="w-full px-2 py-1 border rounded-md">
+                <input type="number" id="minAreaInput" value="2000" min="1" class="w-full px-2 py-1 border rounded-md">
+            </div>
+
+            <div class="input-group">
+                <label for="densityThresholdInput" class="block text-sm font-medium">Density Threshold</label>
+                <input type="range" id="densityThresholdInput" value="100" min="1" max="255" step="1">
+                <div class="value-display" id="densityThresholdValue">100</div>
             </div>
             
             <div class="input-group">
                 <label for="minRatioInput" class="block text-sm font-medium">Min Aspect Ratio</label>
-                <input type="range" id="minRatioInput" value="0.5" min="0.1" max="1.0" step="0.1">
-                <div class="value-display" id="minRatioValue">0.5</div>
+                <input type="range" id="minRatioInput" value="1.0" min="0.1" max="1.0" step="0.1">
+                <div class="value-display" id="minRatioValue">1.0</div>
             </div>
             
             <div class="input-group">
                 <label for="maxRatioInput" class="block text-sm font-medium">Max Aspect Ratio</label>
-                <input type="range" id="maxRatioInput" value="5.0" min="1.0" max="10.0" step="0.5">
-                <div class="value-display" id="maxRatioValue">5.0</div>
+                <input type="range" id="maxRatioInput" value="10.0" min="1.0" max="10.0" step="0.5">
+                <div class="value-display" id="maxRatioValue">10.0</div>
             </div>
             
             <button id="scanButton" class="btn primary-btn mt-4">Check for Defect</button>
@@ -175,102 +181,157 @@
 
             // Debounce or add a small delay to show the loading state
             setTimeout(() => {
-                // Get the canvas from the image-container to draw on it
-                const canvas = imageContainer.querySelector('canvas');
-                detectDefects(originalImage, canvas);
+                detectDefects(originalImage);
             }, 100);
         });
 
-        function detectDefects(img, canvas) {
+        function detectDefects(img) {
             if (!cv) {
                 loadingStatus.textContent = 'OpenCV.js is not loaded yet.';
                 return;
             }
-
+            
+            // Clean up old mats to prevent memory leaks
             let src = cv.imread(img);
             let gray = new cv.Mat();
-            cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-
-            // Invert the colors for better blob detection on dark defects
-            cv.bitwise_not(gray, gray);
-
-            // Apply a blur to reduce noise
             let blur = new cv.Mat();
-            cv.GaussianBlur(gray, blur, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
-
-            // Binarize the image to find defects
             let binary = new cv.Mat();
-            let minArea = parseInt(document.getElementById('minAreaInput').value);
-            cv.threshold(blur, binary, 50, 255, cv.THRESH_BINARY);
-
-            let contours = new cv.MatVector();
+            let distMap = new cv.Mat();
+            let distMapNorm = new cv.Mat();
+            let thresholdedDensity = new cv.Mat();
+            let markers = new cv.Mat.zeros(src.rows, src.cols, cv.CV_32SC1);
             let hierarchy = new cv.Mat();
-            cv.findContours(binary, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-
-            let defectCount = 0;
-            let defectRect = null; // Store the bounding rectangle here
+            let contours = new cv.MatVector();
+            let contoursFinal = new cv.MatVector();
+            let hierarchyFinal = new cv.Mat();
+            let defectRects = []; // Array to store all defect bounding boxes
             
-            for (let i = 0; i < contours.size(); ++i) {
-                let contour = contours.get(i);
-                let area = cv.contourArea(contour);
+            try {
+                // Pre-processing
+                cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+                cv.bitwise_not(gray, gray); // Invert colors to find black defects
+                cv.GaussianBlur(gray, blur, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
+                cv.adaptiveThreshold(blur, binary, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2);
 
-                if (area > minArea) {
-                    let rect = cv.boundingRect(contour);
-                    let ratio = rect.width / rect.height;
-                    let minRatio = parseFloat(document.getElementById('minRatioInput').value);
-                    let maxRatio = parseFloat(document.getElementById('maxRatioInput').value);
+                // Watershed analysis for defect separation
+                cv.distanceTransform(binary, distMap, cv.DIST_L2, 5);
+                cv.normalize(distMap, distMapNorm, 0, 255, cv.NORM_MINMAX, cv.CV_8U);
 
-                    if (ratio >= minRatio && ratio <= maxRatio) {
-                        // We found a potential defect, store its rectangle
-                        defectRect = rect;
-                        defectCount++;
-                    }
-                }
-                contour.delete();
-            }
-
-            // Draw the original image and rectangle on the canvas
-            resultsContainer.innerHTML = '';
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0); // Redraw the original image
-
-            // Draw the rectangle on top of the original image
-            if (defectRect) {
-                ctx.beginPath();
-                ctx.lineWidth = "5";
-                ctx.strokeStyle = "red";
-                ctx.rect(defectRect.x, defectRect.y, defectRect.width, defectRect.height);
-                ctx.stroke();
+                let densityThreshold = parseInt(document.getElementById('densityThresholdInput').value);
+                cv.threshold(distMapNorm, thresholdedDensity, densityThreshold, 255, cv.THRESH_BINARY);
                 
-                // We're done, put the canvas back in resultsContainer
-                resultsContainer.appendChild(canvas);
-            } else {
-                resultsContainer.innerHTML = '';
-                const noDefectCanvas = document.createElement('canvas');
-                noDefectCanvas.width = img.width;
-                noDefectCanvas.height = img.height;
-                const noDefectCtx = noDefectCanvas.getContext('2d');
-                noDefectCtx.drawImage(img, 0, 0);
-                resultsContainer.appendChild(noDefectCanvas);
+                // Prepare markers for watershed
+                cv.findContours(thresholdedDensity, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+                for (let i = 0; i < contours.size(); ++i) {
+                    cv.drawContours(markers, contours, i, new cv.Scalar(i + 1), -1);
+                }
+                
+                // Convert src to RGB for watershed and apply the algorithm
+                cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+                cv.watershed(src, markers);
+
+                // Final processing of markers to find defects
+                let defectCount = 0;
+                let minArea = parseInt(document.getElementById('minAreaInput').value);
+
+                cv.findContours(markers, contoursFinal, hierarchyFinal, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
+
+                for (let i = 0; i < contoursFinal.size(); ++i) {
+                    let contour = contoursFinal.get(i);
+                    let area = cv.contourArea(contour);
+
+                    if (area > minArea) {
+                        let rect = cv.boundingRect(contour);
+                        let ratio = rect.width / rect.height;
+                        let minRatio = parseFloat(document.getElementById('minRatioInput').value);
+                        let maxRatio = parseFloat(document.getElementById('maxRatioInput').value);
+
+                        if (ratio >= minRatio && ratio <= maxRatio) {
+                            defectRects.push(rect); // Store the bounding box
+                            defectCount++;
+                        }
+                    }
+                    contour.delete();
+                }
+
+                // Debugging step: show the intermediate images with labels
+                const intermediateImagesContainer = document.createElement('div');
+                intermediateImagesContainer.classList.add('intermediate-images');
+                
+                const createLabeledCanvas = (mat, label) => {
+                    const container = document.createElement('div');
+                    const p = document.createElement('p');
+                    p.textContent = label;
+                    const canvas = document.createElement('canvas');
+                    cv.imshow(canvas, mat);
+                    container.appendChild(p);
+                    container.appendChild(canvas);
+                    intermediateImagesContainer.appendChild(container);
+                };
+
+                createLabeledCanvas(gray, 'Grayscale Image');
+                createLabeledCanvas(blur, 'Blurred Image');
+                createLabeledCanvas(binary, 'Binary Image');
+                createLabeledCanvas(distMapNorm, 'Distance Map');
+                createLabeledCanvas(thresholdedDensity, 'Thresholded Density Map');
+                
+                resultsContainer.appendChild(intermediateImagesContainer);
+
+                // Draw the final image with the bounding boxes
+                const canvasOutput = document.createElement('canvas');
+                canvasOutput.width = img.width;
+                canvasOutput.height = img.height;
+                const ctx = canvasOutput.getContext('2d');
+                
+                // Draw the original image first
+                ctx.drawImage(img, 0, 0);
+                
+                // Draw the rectangles on top of the original image
+                for (let i = 0; i < defectRects.length; i++) {
+                    let rect = defectRects[i];
+                    ctx.beginPath();
+                    ctx.lineWidth = "5";
+                    ctx.strokeStyle = "red";
+                    ctx.rect(rect.x, rect.y, rect.width, rect.height);
+                    ctx.stroke();
+                }
+
+                // Put the canvas in the resultsContainer
+                resultsContainer.appendChild(canvasOutput);
+                
+                // Add a title for the final image
+                const finalImageTitle = document.createElement('p');
+                finalImageTitle.textContent = "Final Result";
+                resultsContainer.insertBefore(finalImageTitle, canvasOutput);
+
+                const resultText = document.createElement('p');
+                if (defectCount > 0) {
+                    resultText.textContent = `Found ${defectCount} potential defect(s).`;
+                    resultText.style.color = 'red';
+                } else {
+                    resultText.textContent = `No defects found.`;
+                    resultText.style.color = 'green';
+                }
+                resultsContainer.prepend(resultText);
+
+                loadingStatus.textContent = 'Scan complete.';
+
+            } catch (err) {
+                loadingStatus.textContent = 'An error occurred during scanning: ' + err;
+                console.error(err);
+            } finally {
+                // Proper memory management
+                src.delete(); gray.delete(); blur.delete(); binary.delete();
+                distMap.delete(); distMapNorm.delete(); thresholdedDensity.delete();
+                markers.delete(); hierarchy.delete(); contours.delete();
+                contoursFinal.delete(); hierarchyFinal.delete();
             }
-
-
-            const resultText = document.createElement('p');
-            if (defectCount > 0) {
-                resultText.textContent = `Found ${defectCount} potential defect(s).`;
-                resultText.style.color = 'red';
-            } else {
-                resultText.textContent = `No defects found.`;
-                resultText.style.color = 'green';
-            }
-            resultsContainer.prepend(resultText);
-
-            loadingStatus.textContent = 'Scan complete.';
-
-            src.delete(); gray.delete(); blur.delete(); binary.delete(); contours.delete(); hierarchy.delete();
         }
 
         // Update range slider values
+        document.getElementById('densityThresholdInput').addEventListener('input', (e) => {
+            document.getElementById('densityThresholdValue').textContent = e.target.value;
+        });
         document.getElementById('minRatioInput').addEventListener('input', (e) => {
             document.getElementById('minRatioValue').textContent = e.target.value;
         });
