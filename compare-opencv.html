@@ -175,11 +175,13 @@
 
             // Debounce or add a small delay to show the loading state
             setTimeout(() => {
-                detectDefects(originalImage);
+                // Get the canvas from the image-container to draw on it
+                const canvas = imageContainer.querySelector('canvas');
+                detectDefects(originalImage, canvas);
             }, 100);
         });
 
-        function detectDefects(img) {
+        function detectDefects(img, canvas) {
             if (!cv) {
                 loadingStatus.textContent = 'OpenCV.js is not loaded yet.';
                 return;
@@ -206,8 +208,8 @@
             cv.findContours(binary, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
 
             let defectCount = 0;
-            let finalImage = src.clone();
-
+            let defectRect = null; // Store the bounding rectangle here
+            
             for (let i = 0; i < contours.size(); ++i) {
                 let contour = contours.get(i);
                 let area = cv.contourArea(contour);
@@ -219,17 +221,39 @@
                     let maxRatio = parseFloat(document.getElementById('maxRatioInput').value);
 
                     if (ratio >= minRatio && ratio <= maxRatio) {
-                        cv.rectangle(finalImage, new cv.Point(rect.x, rect.y), new cv.Point(rect.x + rect.width, rect.y + rect.height), [255, 0, 0, 255], 3);
+                        // We found a potential defect, store its rectangle
+                        defectRect = rect;
                         defectCount++;
                     }
                 }
                 contour.delete();
             }
 
+            // Draw the original image and rectangle on the canvas
             resultsContainer.innerHTML = '';
-            const canvasOutput = document.createElement('canvas');
-            cv.imshow(canvasOutput, finalImage);
-            resultsContainer.appendChild(canvasOutput);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0); // Redraw the original image
+
+            // Draw the rectangle on top of the original image
+            if (defectRect) {
+                ctx.beginPath();
+                ctx.lineWidth = "5";
+                ctx.strokeStyle = "red";
+                ctx.rect(defectRect.x, defectRect.y, defectRect.width, defectRect.height);
+                ctx.stroke();
+                
+                // We're done, put the canvas back in resultsContainer
+                resultsContainer.appendChild(canvas);
+            } else {
+                resultsContainer.innerHTML = '';
+                const noDefectCanvas = document.createElement('canvas');
+                noDefectCanvas.width = img.width;
+                noDefectCanvas.height = img.height;
+                const noDefectCtx = noDefectCanvas.getContext('2d');
+                noDefectCtx.drawImage(img, 0, 0);
+                resultsContainer.appendChild(noDefectCanvas);
+            }
+
 
             const resultText = document.createElement('p');
             if (defectCount > 0) {
