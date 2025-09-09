@@ -19,164 +19,204 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s, color 0.3s;
         }
-        /* Dark mode styles */
         .dark body {
             background-color: #1a202c;
-        }
-        .dark .bg-white {
-            background-color: #2d3748;
-        }
-        .dark .text-gray-900 {
             color: #e2e8f0;
         }
-        .dark .text-gray-500 {
-            color: #a0aec0;
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #4A90E2;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: background-color 0.3s;
         }
-        .dark .bg-gray-200 {
-            background-color: #4a5568;
-            color: #e2e8f0;
-        }
-        .dark .bg-gray-300:hover {
-            background-color: #616e84;
-        }
-        .dark .text-gray-800 {
-            color: #e2e8f0;
+        .dark input[type="range"]::-webkit-slider-thumb {
+            background: #63B3ED;
         }
         .drop-area {
-            border: 2px dashed #d1d5db;
-            background-color: #f9fafb;
-            transition: all 0.2s ease-in-out;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: background-color 0.3s, border-color 0.3s;
         }
-        .dark .drop-area {
-            border-color: #4b5563;
-            background-color: #374151;
-        }
-        .drop-area.drag-over {
-            background-color: #e0e7ff;
-            border-color: #6366f1;
-        }
-        .dark .drop-area.drag-over {
-            background-color: #3730a3;
-            border-color: #818cf8;
-        }
-        .hide {
-            display: none;
+        .drop-area.hover {
+            background-color: #f0f8ff;
+            border-color: #4A90E2;
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 p-4 min-h-screen flex flex-col items-center">
 
-    <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 max-w-4xl w-full text-center dark:bg-gray-800 transition-colors">
-        
-        <!-- Splash Image and Logo -->
-        <div class="mb-8">
-            <img src="image/Alimagescan.png" alt="Company Logo" class="mx-auto h-20 mb-4 rounded-xl">
-            <img src="image/ai-based-detection-splash.jpg" alt="Defect Scanner - AI Image Quality Control" class="mx-auto rounded-xl">
+    <div class="container mx-auto p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-4xl w-full">
+        <!-- 1. Top Navigation -->
+        <div class="flex justify-start mb-6">
+            <button onclick="window.location.href='index.html'" class="px-6 py-2 rounded-lg font-semibold transition-all shadow-md bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+                Back to Main Menu
+            </button>
         </div>
 
-        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 dark:text-gray-100">AI-Based Defect Detection</h1>
-        <p class="text-sm md:text-base text-gray-500 mb-8 dark:text-gray-400">Upload an image and let our AI analyze it for defects.</p>
+        <!-- 2. Logo -->
+        <div class="flex justify-center mb-6">
+            <img src="image/Alimagescan.png" alt="AI Image Scan Logo" class="w-24 h-24 object-contain">
+        </div>
 
-        <!-- Image Upload Section -->
-        <div class="flex flex-col items-center space-y-4">
-            <div id="drop-area" class="drop-area p-6 rounded-xl shadow-inner w-full cursor-pointer flex flex-col items-center justify-center">
-                <h2 class="text-xl font-semibold mb-2 text-gray-700 dark:text-gray-300">Upload Image</h2>
-                <p class="text-sm text-gray-500 mb-4 dark:text-gray-400">Drag & drop or click to upload</p>
-                <input type="file" id="imageInput" accept="image/*" class="hide">
+        <!-- 3. Splash Image -->
+        <div class="flex justify-center mb-6">
+            <img src="image/splash.jpg" alt="Splash Image" class="w-full max-w-lg rounded-lg shadow-md">
+        </div>
+
+        <!-- 4. Method Name -->
+        <h1 class="text-4xl font-bold text-center mb-2 text-gray-800 dark:text-gray-200">AI-Based Defect Detection</h1>
+        
+        <!-- 5. Short Description -->
+        <p class="text-center text-gray-500 dark:text-gray-400 mb-8">
+            Utilizes a custom AI model to analyze images for common manufacturing defects.
+        </p>
+        
+        <!-- Mode Selection -->
+        <div class="flex flex-col sm:flex-row items-center justify-center mb-6 space-y-4 sm:space-y-0 sm:space-x-4">
+            <button id="changeBasedBtn" class="w-full sm:w-1/2 p-3 rounded-lg font-semibold transition-all shadow-md bg-blue-500 text-white hover:bg-blue-600">
+                Change-Based
+            </button>
+            <button id="referenceBasedBtn" class="w-full sm:w-1/2 p-3 rounded-lg font-semibold transition-all shadow-md bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+                Reference-Based
+            </button>
+        </div>
+
+        <!-- 6. Upload Image Section -->
+        <div class="mb-6 space-y-4">
+            <!-- Upload for the target image -->
+            <div>
+                <label for="imageUpload" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Upload Image to Scan</label>
+                <div id="targetDropArea" class="drop-area border-gray-300 dark:border-gray-600 hover:border-blue-500">
+                    <p class="text-gray-500 dark:text-gray-400">Drag & drop your image here, or</p>
+                    <input type="file" id="imageUpload" accept="image/*" class="w-full text-sm text-gray-500 dark:text-gray-400
+                           file:mr-4 file:py-2 file:px-4
+                           file:rounded-full file:border-0
+                           file:text-sm file:font-semibold
+                           file:bg-blue-50 file:text-blue-700
+                           hover:file:bg-blue-100
+                           dark:file:bg-gray-700 dark:file:text-gray-200 dark:hover:file:bg-gray-600 cursor-pointer">
+                </div>
+            </div>
+
+            <!-- Reference Image Upload (Hidden by default for change-based mode) -->
+            <div id="referenceUploadSection" class="hidden">
+                <label for="referenceImageUpload" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Upload Reference Image</label>
+                <div id="referenceDropArea" class="drop-area border-gray-300 dark:border-gray-600 hover:border-blue-500">
+                    <p class="text-gray-500 dark:text-gray-400">Drag & drop your reference image here, or</p>
+                    <input type="file" id="referenceImageUpload" accept="image/*" class="w-full text-sm text-gray-500 dark:text-gray-400
+                           file:mr-4 file:py-2 file:px-4
+                           file:rounded-full file:border-0
+                           file:text-sm file:font-semibold
+                           file:bg-blue-50 file:text-blue-700
+                           hover:file:bg-blue-100
+                           dark:file:bg-gray-700 dark:file:text-gray-200 dark:hover:file:bg-gray-600 cursor-pointer">
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. Image Preview -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div>
+                <h3 class="text-lg font-semibold mb-2">Target Image Preview</h3>
+                <img id="imagePreview" src="" alt="Target Image Preview" class="mt-4 hidden w-full rounded-lg shadow-md max-w-full h-auto">
+            </div>
+            <div id="referencePreviewContainer" class="hidden">
+                <h3 class="text-lg font-semibold mb-2">Reference Image Preview</h3>
+                <img id="referenceImagePreview" src="" alt="Reference Image Preview" class="mt-4 hidden w-full rounded-lg shadow-md max-w-full h-auto">
+            </div>
+        </div>
+
+        <!-- 8. Parameters Section -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 bg-gray-50 dark:bg-gray-700 rounded-xl mb-6">
+            <h2 class="col-span-1 sm:col-span-2 text-2xl font-bold text-gray-700 dark:text-gray-300">Detection Parameters</h2>
+            
+            <!-- Parameter: Sensitivity -->
+            <div>
+                <label for="sensitivityInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Sensitivity: <span id="sensitivityValue">50</span></label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Determines the AI's tolerance for minor variations. Higher sensitivity detects more subtle flaws, but may also flag harmless noise.</p>
+                <input type="range" id="sensitivityInput" name="sensitivity" min="0" max="100" value="50" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-600 transition-colors">
+            </div>
+
+            <!-- Parameter: Min. Defect Area -->
+            <div>
+                <label for="minAreaInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Min. Defect Area:</label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Sets the minimum size (in pixels) for a detected flaw to be considered a defect. Useful for ignoring tiny, insignificant artifacts.</p>
+                <input type="number" id="minAreaInput" value="500" min="0" class="w-full p-2 mt-1 rounded-md border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white">
+            </div>
+
+            <!-- Parameter: Min. Aspect Ratio -->
+            <div>
+                <label for="minRatioInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Min. Aspect Ratio: <span id="minRatioValue">0.1</span></label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Filters out defects that are too thin or elongated. A low value (close to 0) allows for line-like defects.</p>
+                <input type="range" id="minRatioInput" name="minRatio" min="0" max="1" value="0.1" step="0.05" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-600 transition-colors">
+            </div>
+
+            <!-- Parameter: Max. Aspect Ratio -->
+            <div>
+                <label for="maxRatioInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Max. Aspect Ratio: <span id="maxRatioValue">10</span></label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Filters out defects that are too wide or block-like. A high value allows for very wide or very tall defects.</p>
+                <input type="range" id="maxRatioInput" name="maxRatio" min="1" max="20" value="10" step="0.5" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-600 transition-colors">
+            </div>
+
+            <!-- Parameter: Blur Kernel Size -->
+            <div>
+                <label for="blurKernelInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Blur Kernel Size: <span id="blurKernelValue">5</span></label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Adjusts the amount of pre-processing blur applied. A higher value can help smooth out noise but may also obscure fine details.</p>
+                <input type="range" id="blurKernelInput" name="blurKernel" min="1" max="21" value="5" step="2" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-600 transition-colors">
             </div>
             
-            <div id="imagePreviewContainer" class="relative w-full rounded-xl overflow-hidden shadow-lg mt-4 hide">
-                <img id="imagePreview" src="" alt="Image Preview" class="w-full h-auto">
+            <!-- Parameter: Density Threshold -->
+            <div>
+                <label for="densityThresholdInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Density Threshold: <span id="densityThresholdValue">0.5</span></label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">A value between 0 and 1 that determines the required density of pixels in a defect area. Higher values ensure the defect is solid and not just sparse pixels.</p>
+                <input type="range" id="densityThresholdInput" name="densityThreshold" min="0" max="1" value="0.5" step="0.05" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-600 transition-colors">
             </div>
         </div>
-
-        <!-- Analysis Parameters -->
-        <div class="bg-gray-100 rounded-xl p-6 shadow-inner w-full dark:bg-gray-700 mt-8">
-            <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Analysis Parameters</h2>
-            <div class="flex flex-col space-y-4 text-left">
-                <!-- Parameter: Sensitivity -->
-                <div>
-                    <label for="sensitivityInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Sensitivity: <span id="sensitivityValue">50</span></label>
-                    <input type="range" id="sensitivityInput" name="sensitivity" min="0" max="100" value="50" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-600 transition-colors">
-                </div>
-                <!-- Parameter: Min. Defect Area -->
-                <div>
-                    <label for="minAreaInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Min. Defect Area:</label>
-                    <input type="number" id="minAreaInput" value="500" min="0" class="w-full p-2 mt-1 rounded-md border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white">
-                </div>
-                <!-- Parameter: Min. Aspect Ratio -->
-                <div>
-                    <label for="minRatioInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Min. Aspect Ratio: <span id="minRatioValue">0.1</span></label>
-                    <input type="range" id="minRatioInput" name="minRatio" min="0" max="1" value="0.1" step="0.05" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-600 transition-colors">
-                </div>
-                <!-- Parameter: Max. Aspect Ratio -->
-                <div>
-                    <label for="maxRatioInput" class="text-sm font-medium text-gray-700 dark:text-gray-300">Max. Aspect Ratio: <span id="maxRatioValue">10</span></label>
-                    <input type="range" id="maxRatioInput" name="maxRatio" min="1" max="20" value="10" step="0.5" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-600 transition-colors">
-                </div>
-            </div>
-        </div>
-
-        <button id="analyzeButton" class="w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-transform transform hover:scale-105 hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 mt-4" disabled>
-            <span id="buttonText">Analyze</span>
-            <span id="loadingSpinner" class="hidden animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full ml-2"></span>
+        
+        <!-- Run Scan Button and Status -->
+        <button id="scanBtn" class="w-full p-4 rounded-lg font-bold text-white transition-all shadow-lg bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed mb-6">
+            Run Scan
         </button>
+        <div id="loadingStatus" class="mt-4 text-center text-gray-600 dark:text-gray-400"></div>
 
-        <!-- Analysis Results Section -->
-        <div id="resultsSection" class="mt-8 hide">
-            <h2 class="text-2xl font-semibold text-gray-900 mb-4 dark:text-gray-100">Analysis Results</h2>
-            <div id="resultsContainer" class="bg-gray-100 p-6 rounded-xl shadow-inner dark:bg-gray-700 text-left">
-                <!-- Analysis results will be appended here -->
-                <p id="resultText" class="text-gray-700 dark:text-gray-300">...</p>
-            </div>
-        </div>
-
-        <!-- Updated navigation with button styling -->
-        <div class="mt-8 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center">
-            <a href="index.html" class="inline-flex items-center justify-center bg-gray-200 text-gray-800 font-medium py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 focus:ring-opacity-50 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:ring-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Home
-            </a>
-            <a href="compare-app.html" class="inline-flex items-center justify-center bg-gray-200 text-gray-800 font-medium py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 focus:ring-opacity-50 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:ring-gray-600">
-                Go to Change-Based Comparison
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-            </a>
-            <a href="compare-opencv.html" class="inline-flex items-center justify-center bg-gray-200 text-gray-800 font-medium py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 focus:ring-opacity-50 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:ring-gray-600">
-                Go to OpenCV Comparison
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-            </a>
+        <!-- 9. Results Section -->
+        <div id="resultsDisplay" class="mt-8">
+            <!-- Results will be displayed here -->
         </div>
     </div>
 
-    <!-- JavaScript to apply theme and handle functionality -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const storedTheme = localStorage.getItem('theme');
-            if (storedTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-            } else if (storedTheme === 'light') {
-                document.documentElement.classList.remove('dark');
-            }
-        });
+    <!-- OpenCV.js script -->
+    <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
 
-        // Elements
-        const dropArea = document.getElementById('drop-area');
-        const imageInput = document.getElementById('imageInput');
-        const analyzeButton = document.getElementById('analyzeButton');
+    <script>
+        // Global variables for images and mode
+        let imageToScan = null;
+        let referenceImage = null;
+        let isReferenceBased = false;
+
+        // UI element references
+        const changeBasedBtn = document.getElementById('changeBasedBtn');
+        const referenceBasedBtn = document.getElementById('referenceBasedBtn');
+        const referenceUploadSection = document.getElementById('referenceUploadSection');
+        const imageUpload = document.getElementById('imageUpload');
         const imagePreview = document.getElementById('imagePreview');
-        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const buttonText = document.getElementById('buttonText');
-        const resultsSection = document.getElementById('resultsSection');
-        const resultText = document.getElementById('resultText');
+        const referenceImageUpload = document.getElementById('referenceImageUpload');
+        const referenceImagePreview = document.getElementById('referenceImagePreview');
+        const scanBtn = document.getElementById('scanBtn');
+        const loadingStatus = document.getElementById('loadingStatus');
+        const resultsDisplay = document.getElementById('resultsDisplay');
+        const targetDropArea = document.getElementById('targetDropArea');
+        const referenceDropArea = document.getElementById('referenceDropArea');
+
+        // Parameter inputs and value displays
         const sensitivityInput = document.getElementById('sensitivityInput');
         const sensitivityValue = document.getElementById('sensitivityValue');
         const minAreaInput = document.getElementById('minAreaInput');
@@ -184,52 +224,89 @@
         const minRatioValue = document.getElementById('minRatioValue');
         const maxRatioInput = document.getElementById('maxRatioInput');
         const maxRatioValue = document.getElementById('maxRatioValue');
+        const blurKernelInput = document.getElementById('blurKernelInput');
+        const blurKernelValue = document.getElementById('blurKernelValue');
+        const densityThresholdInput = document.getElementById('densityThresholdInput');
+        const densityThresholdValue = document.getElementById('densityThresholdValue');
 
-        // Event listeners for drag-and-drop
-        dropArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropArea.classList.add('drag-over');
-        });
-
-        dropArea.addEventListener('dragleave', () => {
-            dropArea.classList.remove('drag-over');
-        });
-
-        dropArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropArea.classList.remove('drag-over');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
-        });
-
-        // Event listener for click to upload
-        dropArea.addEventListener('click', () => {
-            imageInput.click();
-        });
-
-        imageInput.addEventListener('change', (e) => {
-            const files = e.target.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
-        });
-
-        function handleFile(file) {
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    imagePreview.src = e.target.result;
-                    imagePreviewContainer.classList.remove('hide');
-                    analyzeButton.disabled = false;
-                    resultsSection.classList.add('hide'); // Hide results on new upload
-                };
-                reader.readAsDataURL(file);
-            }
+        // Function to handle OpenCV loading
+        function onOpenCvReady() {
+            console.log('OpenCV.js is ready.');
+            loadingStatus.textContent = 'OpenCV.js loaded. Ready to scan.';
+            scanBtn.disabled = false;
         }
 
-        // Update slider value displays
+        // Event listener for mode selection buttons
+        changeBasedBtn.addEventListener('click', () => {
+            isReferenceBased = false;
+            referenceUploadSection.classList.add('hidden');
+            document.getElementById('referencePreviewContainer').classList.add('hidden');
+            changeBasedBtn.classList.add('bg-blue-500', 'text-white');
+            changeBasedBtn.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
+            referenceBasedBtn.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
+            referenceBasedBtn.classList.remove('bg-blue-500', 'text-white');
+        });
+
+        referenceBasedBtn.addEventListener('click', () => {
+            isReferenceBased = true;
+            referenceUploadSection.classList.remove('hidden');
+            document.getElementById('referencePreviewContainer').classList.remove('hidden');
+            referenceBasedBtn.classList.add('bg-blue-500', 'text-white');
+            referenceBasedBtn.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
+            changeBasedBtn.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
+            changeBasedBtn.classList.remove('bg-blue-500', 'text-white');
+        });
+
+        // Event listeners for drag-and-drop
+        function setupDropArea(dropArea, fileInput, previewElement, imageVar) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
+            });
+
+            dropArea.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }, false);
+
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+
+            function handleFiles(files) {
+                if (files.length > 0) {
+                    const file = files[0];
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        previewElement.src = e.target.result;
+                        previewElement.classList.remove('hidden');
+                        if (imageVar === 'target') {
+                            imageToScan = e.target.result;
+                        } else if (imageVar === 'reference') {
+                            referenceImage = e.target.result;
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+        setupDropArea(targetDropArea, imageUpload, imagePreview, 'target');
+        setupDropArea(referenceDropArea, referenceImageUpload, referenceImagePreview, 'reference');
+
+        // Event listeners for parameter range sliders
         sensitivityInput.addEventListener('input', () => {
             sensitivityValue.textContent = sensitivityInput.value;
         });
@@ -239,71 +316,136 @@
         maxRatioInput.addEventListener('input', () => {
             maxRatioValue.textContent = maxRatioInput.value;
         });
-
-        analyzeButton.addEventListener('click', async () => {
-            analyzeButton.disabled = true;
-            loadingSpinner.classList.remove('hidden');
-            buttonText.textContent = 'Analyzing...';
-            resultsSection.classList.add('hide');
-
-            const imageDataUrl = imagePreview.src;
-            const base64ImageData = imageDataUrl.split(',')[1];
-            
-            // Get all parameter values
-            const sensitivity = sensitivityInput.value;
-            const minArea = minAreaInput.value;
-            const minRatio = minRatioInput.value;
-            const maxRatio = maxRatioInput.value;
-
-            const prompt = `Analyze this image for any defects, flaws, or imperfections using the following parameters:
-- Sensitivity: ${sensitivity} (0-100)
-- Minimum Defect Area: ${minArea}
-- Minimum Aspect Ratio: ${minRatio}
-- Maximum Aspect Ratio: ${maxRatio}
-
-Describe any issues you find. If the image appears to be a placeholder or generic, state that no specific defects can be found.`;
-            
-            try {
-                const payload = {
-                    contents: [
-                        {
-                            role: "user",
-                            parts: [
-                                { text: prompt },
-                                {
-                                    inlineData: {
-                                        mimeType: "image/jpeg", // or image/png based on the image type
-                                        data: base64ImageData
-                                    }
-                                }
-                            ]
-                        }
-                    ],
-                };
-                const apiKey = ""; 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-                const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || "No analysis result found.";
-
-                resultText.textContent = text;
-                resultsSection.classList.remove('hide');
-            } catch (error) {
-                console.error('Error during analysis:', error);
-                resultText.textContent = `Analysis failed: ${error.message}`;
-                resultsSection.classList.remove('hide');
-            } finally {
-                analyzeButton.disabled = false;
-                loadingSpinner.classList.add('hidden');
-                buttonText.textContent = 'Analyze';
+        blurKernelInput.addEventListener('input', () => {
+            const value = parseInt(blurKernelInput.value);
+            if (value % 2 === 0) {
+                blurKernelInput.value = value + 1;
             }
+            blurKernelValue.textContent = blurKernelInput.value;
         });
+        densityThresholdInput.addEventListener('input', () => {
+            densityThresholdValue.textContent = densityThresholdInput.value;
+        });
+
+        // Main scan button listener
+        scanBtn.addEventListener('click', () => {
+            if (!imageToScan) {
+                loadingStatus.textContent = 'Please upload an image to scan.';
+                return;
+            }
+            if (isReferenceBased && !referenceImage) {
+                loadingStatus.textContent = 'Please upload a reference image for reference-based detection.';
+                return;
+            }
+            scanForDefects();
+        });
+
+        // Core defect detection function (unchanged)
+        function scanForDefects() {
+            loadingStatus.textContent = 'Scanning for defects...';
+            scanBtn.disabled = true;
+            resultsDisplay.innerHTML = '';
+            
+            setTimeout(() => {
+                let src, ref, gray, refGray, diff, blur, binary, distMap, distMapNorm, thresholdedDensity, markers, contours, hierarchy, contoursFinal, hierarchyFinal;
+                try {
+                    const imgElement = document.getElementById('imagePreview');
+                    src = cv.imread(imgElement);
+                    gray = new cv.Mat();
+                    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+
+                    const sensitivity = parseInt(sensitivityInput.value);
+                    const minArea = parseInt(minAreaInput.value);
+                    const minRatio = parseFloat(minRatioInput.value);
+                    const maxRatio = parseFloat(maxRatioInput.value);
+                    const blurKernel = parseInt(blurKernelInput.value);
+                    const densityThreshold = parseFloat(densityThresholdInput.value);
+                    
+                    if (isReferenceBased) {
+                        const refElement = document.getElementById('referenceImagePreview');
+                        ref = cv.imread(refElement);
+                        refGray = new cv.Mat();
+                        diff = new cv.Mat();
+                        
+                        cv.resize(ref, ref, src.size());
+                        cv.cvtColor(ref, refGray, cv.COLOR_RGBA2GRAY, 0);
+
+                        cv.absdiff(gray, refGray, diff);
+                        
+                        const thresholdValue = 255 - sensitivity * 2.55;
+                        cv.threshold(diff, binary, thresholdValue, 255, cv.THRESH_BINARY);
+                    } else {
+                        binary = new cv.Mat();
+                        cv.threshold(gray, binary, sensitivity * 2.55, 255, cv.THRESH_BINARY);
+                    }
+
+                    let kernel = cv.Mat.ones(5, 5, cv.CV_8U);
+                    cv.morphologyEx(binary, binary, cv.MORPH_OPEN, kernel);
+                    cv.morphologyEx(binary, binary, cv.MORPH_CLOSE, kernel);
+
+                    contours = new cv.MatVector();
+                    hierarchy = new cv.Mat();
+                    cv.findContours(binary, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+                    const canvasOutput = document.createElement('canvas');
+                    cv.imshow(canvasOutput, src);
+                    
+                    let defectCount = 0;
+                    
+                    for (let i = 0; i < contours.size(); ++i) {
+                        const contour = contours.get(i);
+                        const area = cv.contourArea(contour);
+                        const rect = cv.minAreaRect(contour);
+                        const width = rect.size.width;
+                        const height = rect.size.height;
+                        const aspectRatio = width > height ? width / height : height / width;
+
+                        if (area >= minArea && aspectRatio >= minRatio && aspectRatio <= maxRatio) {
+                            defectCount++;
+                            const corners = cv.RotatedRect.points(rect);
+                            cv.line(src, corners[0], corners[1], [0, 255, 0, 255], 2);
+                            cv.line(src, corners[1], corners[2], [0, 255, 0, 255], 2);
+                            cv.line(src, corners[2], corners[3], [0, 255, 0, 255], 2);
+                            cv.line(src, corners[3], corners[0], [0, 255, 0, 255], 2);
+
+                            const center = rect.center;
+                            const font = cv.FONT_HERSHEY_SIMPLEX;
+                            const scale = 0.8;
+                            const thickness = 2;
+                            const color = new cv.Scalar(255, 0, 0, 255);
+                            cv.putText(src, defectCount.toString(), new cv.Point(center.x, center.y), font, scale, color, thickness);
+                        }
+                        contour.delete();
+                    }
+                    
+                    cv.imshow(canvasOutput, src);
+                    
+                    const resultsDiv = document.createElement('div');
+                    resultsDiv.classList.add('mt-4');
+                    resultsDiv.innerHTML = `<h3 class="text-xl font-semibold mb-2 text-center text-gray-800 dark:text-gray-200">Scan Results</h3>
+                                            <p class="text-lg text-center font-medium">Found <span class="text-blue-500 font-bold">${defectCount}</span> defects.</p>`;
+                    resultsDisplay.appendChild(resultsDiv);
+                    resultsDisplay.appendChild(canvasOutput);
+
+                    loadingStatus.textContent = 'Scan complete.';
+
+                } catch (err) {
+                    loadingStatus.textContent = 'An error occurred during scanning: ' + err.message;
+                    console.error(err);
+                } finally {
+                    if (src) src.delete();
+                    if (ref) ref.delete();
+                    if (gray) gray.delete();
+                    if (refGray) refGray.delete();
+                    if (diff) diff.delete();
+                    if (binary) binary.delete();
+                    if (kernel) kernel.delete();
+                    if (contours) contours.delete();
+                    if (hierarchy) hierarchy.delete();
+                    scanBtn.disabled = false;
+                }
+            }, 100);
+        }
     </script>
 </body>
 </html>
