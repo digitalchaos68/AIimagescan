@@ -1,503 +1,319 @@
-<!-- compare-app.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>Reference-Based Image Comparison</title>
-    
-    <!-- SEO and Open Graph metadata for sharing -->
-    <meta name="description" content="Reference-based image comparison tool to find defects and differences.">
-    <meta property="og:title" content="Reference-Based Image Comparison">
-    <meta property="og:description" content="An AI-powered tool to compare a reference image against a test image for quality control.">
+    <title>Compare-based Defect Detection</title>
+
+    <!-- Metadata for SEO and Social Sharing -->
+    <meta name="description" content="Reference-based image defect detection using AI. Upload a reference and a test image to find differences and defects.">
+    <meta property="og:title" content="Compare-based Defect Detection - AI Image Quality Control">
+    <meta property="og:description" content="Use AI to compare images and detect defects.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://digitalchaos68.github.io/AIimagescan/compare-app.html">
-    <meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/compare-app-splash.jpg">
-
+    <meta property="og:image" content="https://digitalchaos68.github.io/AIimagescan/image/compare-based-detection-splash.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Reference-Based Image Comparison">
-    <meta name="twitter:description" content="Find and analyze defects in images using advanced AI algorithms.">
-    <meta name="twitter:image" content="hhttps://digitalchaos68.github.io/AIimagescan/image/compare-app-splash.jpg">
+    <meta name="twitter:title" content="Compare-based Defect Detection - AI Image Quality Control">
+    <meta name="twitter:description" content="Find and analyze defects in images by comparing them with a reference using advanced AI algorithms.">
+    <meta name="twitter:image" content="https://digitalchaos68.github.io/AIimagescan/image/compare-based-detection-splash.jpg">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .light-mode {
             background-color: #f3f4f6;
-            color: #1f2937;
+            transition: all 0.3s ease;
         }
-        .dark-mode {
-            background-color: #1f2937;
-            color: #f3f4f6;
+        .container {
+            max-width: 100%;
         }
-        .dark-mode .bg-white {
-            background-color: #2d3748;
+        .drag-area {
+            border: 2px dashed #9ca3af;
+            background-color: #f9fafb;
+            transition: all 0.3s ease;
         }
-        .dark-mode .text-gray-800 {
-            color: #e2e8f0;
+        .drag-area.active {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
         }
-        .dark-mode .text-gray-500, .dark-mode .text-gray-700 {
-            color: #a0aec0;
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
         }
-        .dark-mode .text-gray-400 {
-            color: #718096;
-        }
-        .dark-mode .border-gray-300 {
-            border-color: #4a5568;
-        }
-        .dark-mode .rounded-lg {
-            border-color: #4a5568;
-        }
-        /* Style for the theme toggle button */
-        #theme-toggle {
-            cursor: pointer;
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 3rem;
-            height: 1.5rem;
-            background-color: #ccc;
-            border-radius: 9999px;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 0.25rem;
-        }
-        #theme-toggle .toggle-thumb {
-            width: 1rem;
-            height: 1rem;
-            background-color: white;
-            border-radius: 50%;
-            transition: transform 0.3s;
-        }
-        #theme-toggle.dark .toggle-thumb {
-            transform: translateX(1.5rem);
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
-<body class="light-mode min-h-screen flex flex-col items-center justify-between p-4 relative">
 
-    <!-- Theme Toggle Button -->
-    <button id="theme-toggle" class="bg-gray-300">
-        <span class="toggle-thumb"></span>
-    </button>
+<body class="bg-gray-100 flex flex-col items-center justify-start min-h-screen p-4 sm:p-6 lg:p-8 text-gray-800">
 
-    <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-4xl mb-20 md:mb-24">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Reference-Based Image Comparison</h1>
-        <p class="text-center text-gray-500 mb-8">Upload a reference image and a test image to find the differences.</p>
+    <!-- Top Navigation -->
+    <div class="w-full flex justify-start mb-6">
+        <a href="index.html" class="bg-blue-600 text-white py-2 px-6 rounded-full text-lg font-semibold shadow-lg hover:bg-blue-700 transition duration-300">
+            Back to Main Menu
+        </a>
+    </div>
 
-        <!-- Splash Screen Placeholder -->
-        <div id="splash-screen" class="flex flex-col items-center justify-center text-center p-6 mb-8">
-            <img src="image/Alimagescan.png"  alt="Company Logo" class="mx-auto h-20 mb-4 rounded-xl">
-            <img src="image/compare-app-splash.jpg" alt="Image Comparison Placeholder" class="rounded-lg shadow-md mb-4">
-            <p class="text-gray-600 text-lg">Upload your images above to begin the analysis.</p>
-        </div>
+    <!-- Logo and Title Section -->
+    <div class="w-full text-center mb-6">
+        <img src="image/Alimagescan.png" alt="AI Image Scan Logo" class="mx-auto w-40 sm:w-48 lg:w-56 rounded-lg shadow-md mb-4">
+    </div>
 
-        <!-- Image Upload Section -->
-        <div id="upload-section" class="flex flex-col md:flex-row gap-6 mb-8">
-            <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Reference Image</label>
-                <div id="refDropZone" class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-all cursor-pointer">
-                    <input type="file" id="referenceImageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                    <div id="refPlaceholder" class="text-gray-400">
-                        <svg class="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                            <path d="M28 8H12a2 2 0 00-2 2v16m16-4h-8m-4 0v-4m-4 4h-4m-4 0a2 2 0 01-2-2V10a2 2 0 012-2h12l-4 4h8a2 2 0 012 2v4a2 2 0 00-2 2h-8m-4 4v4m4 0h-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        <p class="mt-2 text-sm">Drag and drop or click to upload</p>
-                    </div>
-                    <img id="refPreview" src="#" alt="Reference Image Preview" class="hidden w-full h-auto max-h-48 object-contain rounded-lg">
-                </div>
+    <!-- Splash Image -->
+    <div class="w-full max-w-4xl mb-6">
+        <img src="image/splash.jpg" alt="Splash Image" class="w-full rounded-lg shadow-md">
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="bg-white p-6 sm:p-8 lg:p-10 rounded-lg shadow-xl w-full max-w-4xl mb-8 fade-in">
+        <h1 class="text-3xl sm:text-4xl font-bold text-center text-blue-800 mb-4">Change-Based Defect Detection (AI)</h1>
+        <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">This method compares two images to find and highlight any differences. It is ideal for quality control where a known good reference image exists. The AI analyzes subtle variations to pinpoint defects.</p>
+
+        <!-- Upload Image Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg shadow-inner drag-area text-center" id="dragAreaReference">
+                <span class="text-gray-500 text-xl mb-2">Drag & Drop Reference Image</span>
+                <span class="text-gray-400 text-sm mb-4">or</span>
+                <input type="file" id="imageInputReference" class="hidden" accept="image/*">
+                <button onclick="document.getElementById('imageInputReference').click()" class="bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition duration-300">Select Reference Image</button>
             </div>
-            <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Test Image</label>
-                <div id="testDropZone" class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-all cursor-pointer">
-                    <input type="file" id="testImageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                    <div id="testPlaceholder" class="text-gray-400">
-                        <svg class="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                            <path d="M28 8H12a2 2 0 00-2 2v16m16-4h-8m-4 0v-4m-4 4h-4m-4 0a2 2 0 01-2-2V10a2 2 0 012-2h12l-4 4h8a2 2 0 012 2v4a2 2 0 00-2 2h-8m-4 4v4m4 0h-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        <p class="mt-2 text-sm">Drag and drop or click to upload</p>
-                    </div>
-                    <img id="testPreview" src="#" alt="Test Image Preview" class="hidden w-full h-auto max-h-48 object-contain rounded-lg">
-                </div>
+            <div class="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg shadow-inner drag-area text-center" id="dragAreaTest">
+                <span class="text-gray-500 text-xl mb-2">Drag & Drop Test Image</span>
+                <span class="text-gray-400 text-sm mb-4">or</span>
+                <input type="file" id="imageInputTest" class="hidden" accept="image/*">
+                <button onclick="document.getElementById('imageInputTest').click()" class="bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition duration-300">Select Test Image</button>
             </div>
         </div>
 
-        <!-- Control Section with new sensitivity parameter -->
-        <div class="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
-            <div class="flex-1 w-full sm:w-auto">
-                <label for="sensitivityInput" class="block text-sm font-medium text-gray-700">Sensitivity: <span id="sensitivityValue">50</span></label>
-                <input type="range" id="sensitivityInput" min="1" max="255" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+        <!-- Image Preview Windows -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-gray-200 p-4 rounded-lg shadow-inner flex flex-col items-center">
+                <span class="text-gray-600 mb-2">Reference Image Preview</span>
+                <img id="previewImageReference" class="w-full max-w-full h-auto rounded-lg shadow-md border border-gray-300" src="https://placehold.co/400x300/e5e7eb/4b5563?text=Reference+Image" alt="Reference Image Preview">
             </div>
-            <button id="compareButton" class="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                Compare Images
+            <div class="bg-gray-200 p-4 rounded-lg shadow-inner flex flex-col items-center">
+                <span class="text-gray-600 mb-2">Test Image Preview</span>
+                <img id="previewImageTest" class="w-full max-w-full h-auto rounded-lg shadow-md border border-gray-300" src="https://placehold.co/400x300/e5e7eb/4b5563?text=Test+Image" alt="Test Image Preview">
+            </div>
+        </div>
+
+        <!-- Detection Parameters -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-inner mb-8">
+            <h2 class="text-xl font-bold mb-4">Detection Parameters</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="similarityThreshold" class="block text-sm font-medium text-gray-700 mb-2">
+                        Similarity Threshold
+                    </label>
+                    <p class="text-xs text-gray-500 mb-2">
+                        This parameter sets the minimum similarity score required for two pixels to be considered identical. A lower threshold (e.g., 0.8) is less strict and will tolerate more subtle differences, while a higher threshold (e.g., 0.95) is more sensitive and will flag minor variations as defects. Adjusting this value impacts the number of detected defects.
+                    </p>
+                    <input type="range" id="similarityThreshold" min="0" max="255" step="1" value="30" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer">
+                    <span id="similarityThresholdValue" class="text-sm font-semibold text-gray-700 mt-2 block">30</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scan Button -->
+        <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
+            <button id="scanButton" class="bg-green-600 text-white py-3 px-8 rounded-lg font-bold text-lg shadow-lg hover:bg-green-700 transition duration-300 w-full sm:w-auto">
+                Start Scan
             </button>
-            <div id="loadingIndicator" class="hidden text-sm text-gray-500 animate-pulse">
-                Analyzing images...
-            </div>
         </div>
 
-        <!-- Results Section -->
-        <div id="resultsContainer" class="hidden">
-            <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">Comparison Results</h2>
-            <div id="imageContainer" class="flex flex-col md:flex-row justify-center items-center gap-6">
-                <!-- Image canvases will be appended here -->
+        <!-- Results Window -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-inner" id="resultsWindow">
+            <h2 class="text-xl font-bold mb-4">Defect Detection Results</h2>
+            <div id="loadingStatus" class="text-center text-lg text-blue-600 font-semibold mb-4">
+                Loading OpenCV.js...
             </div>
-            <div id="summary" class="mt-8 text-center text-lg font-medium text-gray-700"></div>
-        </div>
-
-        <!-- Custom Modal -->
-        <div id="alertModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                <div class="mt-3 text-center">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle"></h3>
-                    <div class="mt-2 px-7 py-3">
-                        <p class="text-sm text-gray-500" id="modalMessage"></p>
-                    </div>
-                    <div class="items-center px-4 py-3">
-                        <button id="modalCloseButton" class="px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            OK
-                        </button>
-                    </div>
-                </div>
+            <div id="resultsDisplay" class="flex flex-col items-center justify-center">
+                <p class="text-gray-500 text-center">Your results will appear here after the scan is complete.</p>
             </div>
         </div>
 
     </div>
 
-    <!-- Navigation Bar -->
-    <div class="fixed bottom-0 left-0 right-0 z-40 bg-gray-800 bg-opacity-95 text-white shadow-lg p-4 flex flex-col md:flex-row justify-around items-center space-y-2 md:space-y-0 md:space-x-4">
-        <a href="index.html" class="w-full md:w-auto text-center px-6 py-3 bg-gray-700 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-            Back to Home
-        </a>
-        <a href="ai-based-detection.html" class="w-full md:w-auto text-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-            AI-Based Detection
-        </a>
-        <a href="#" class="w-full md:w-auto text-center px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md cursor-default">
-            Reference-Based Comparison
-        </a>
-    </div>
-
+    <!-- JavaScript for Logic -->
+    <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
     <script>
-        // Theme Toggling Logic
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        const dragAreaReference = document.getElementById('dragAreaReference');
+        const dragAreaTest = document.getElementById('dragAreaTest');
+        const imageInputReference = document.getElementById('imageInputReference');
+        const imageInputTest = document.getElementById('imageInputTest');
+        const previewImageReference = document.getElementById('previewImageReference');
+        const previewImageTest = document.getElementById('previewImageTest');
+        const scanButton = document.getElementById('scanButton');
+        const loadingStatus = document.getElementById('loadingStatus');
+        const resultsDisplay = document.getElementById('resultsDisplay');
+        const similarityThresholdInput = document.getElementById('similarityThreshold');
+        const similarityThresholdValue = document.getElementById('similarityThresholdValue');
 
-        function setTheme(theme) {
-            const body = document.body;
-            const toggle = themeToggleBtn;
-            if (theme === 'dark') {
-                body.classList.add('dark-mode');
-                body.classList.remove('light-mode');
-                toggle.classList.add('dark');
-                toggle.style.backgroundColor = '#4a5568';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.remove('dark-mode');
-                body.classList.add('light-mode');
-                toggle.classList.remove('dark');
-                toggle.style.backgroundColor = '#a0aec0';
-                localStorage.setItem('theme', 'light');
-            }
+        // Update slider value on input
+        similarityThresholdInput.addEventListener('input', (e) => {
+            similarityThresholdValue.textContent = e.target.value;
+        });
+
+        // Event listeners for drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dragAreaReference.addEventListener(eventName, preventDefaults, false);
+            dragAreaTest.addEventListener(eventName, preventDefaults, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dragAreaReference.addEventListener(eventName, highlightReference, false);
+            dragAreaTest.addEventListener(eventName, highlightTest, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dragAreaReference.addEventListener(eventName, unhighlightReference, false);
+            dragAreaTest.addEventListener(eventName, unhighlightTest, false);
+        });
+
+        dragAreaReference.addEventListener('drop', handleDropReference, false);
+        dragAreaTest.addEventListener('drop', handleDropTest, false);
+
+        imageInputReference.addEventListener('change', (e) => handleFiles(e.target.files, previewImageReference));
+        imageInputTest.addEventListener('change', (e) => handleFiles(e.target.files, previewImageTest));
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
 
-        const storedTheme = localStorage.getItem('theme');
-        if (storedTheme) {
-            setTheme(storedTheme);
-        } else {
-            setTheme(prefersDarkScheme.matches ? 'dark' : 'light');
+        function highlightReference() { dragAreaReference.classList.add('active'); }
+        function unhighlightReference() { dragAreaReference.classList.remove('active'); }
+        function highlightTest() { dragAreaTest.classList.add('active'); }
+        function unhighlightTest() { dragAreaTest.classList.remove('active'); }
+
+        function handleDropReference(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files, previewImageReference);
         }
 
-        prefersDarkScheme.addListener((event) => {
-            setTheme(event.matches ? 'dark' : 'light');
-        });
-
-        themeToggleBtn.addEventListener('click', () => {
-            const currentTheme = localStorage.getItem('theme');
-            if (currentTheme === 'dark') {
-                setTheme('light');
-            } else {
-                setTheme('dark');
-            }
-        });
-
-        // Custom modal function to replace alert()
-        function showModal(title, message) {
-            const modal = document.getElementById('alertModal');
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalMessage').textContent = message;
-            modal.classList.remove('hidden');
+        function handleDropTest(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files, previewImageTest);
         }
 
-        document.getElementById('modalCloseButton').addEventListener('click', () => {
-            document.getElementById('alertModal').classList.add('hidden');
-        });
-
-        const referenceImageInput = document.getElementById('referenceImageInput');
-        const testImageInput = document.getElementById('testImageInput');
-        const compareButton = document.getElementById('compareButton');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const resultsContainer = document.getElementById('resultsContainer');
-        const imageContainer = document.getElementById('imageContainer');
-        const summary = document.getElementById('summary');
-        const splashScreen = document.getElementById('splash-screen');
-        const sensitivityInput = document.getElementById('sensitivityInput');
-        const sensitivityValue = document.getElementById('sensitivityValue');
-        
-        const refDropZone = document.getElementById('refDropZone');
-        const testDropZone = document.getElementById('testDropZone');
-        const refPreview = document.getElementById('refPreview');
-        const testPreview = document.getElementById('testPreview');
-        const refPlaceholder = document.getElementById('refPlaceholder');
-        const testPlaceholder = document.getElementById('testPlaceholder');
-
-        // Function to handle file processing and preview
-        const handleFile = (file, previewElement, placeholderElement) => {
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                previewElement.src = e.target.result;
-                previewElement.classList.remove('hidden');
-                placeholderElement.classList.add('hidden');
-            };
-            reader.readAsDataURL(file);
-        };
-        
-        // Event listeners for 'click to upload'
-        referenceImageInput.addEventListener('change', (e) => {
-            handleFile(e.target.files[0], refPreview, refPlaceholder);
-        });
-
-        testImageInput.addEventListener('change', (e) => {
-            handleFile(e.target.files[0], testPreview, testPlaceholder);
-        });
-
-        // Event listeners for drag and drop functionality
-        [refDropZone, testDropZone].forEach(zone => {
-            zone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                zone.classList.add('border-blue-500');
-            });
-            zone.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                zone.classList.remove('border-blue-500');
-            });
-            zone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                zone.classList.remove('border-blue-500');
-                const file = e.dataTransfer.files[0];
-                if (zone.id === 'refDropZone') {
-                    referenceImageInput.files = e.dataTransfer.files;
-                    handleFile(file, refPreview, refPlaceholder);
-                } else {
-                    testImageInput.files = e.dataTransfer.files;
-                    handleFile(file, testPreview, testPlaceholder);
+        function handleFiles(files, previewElement) {
+            if (files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewElement.src = e.target.result;
                 }
-            });
-        });
-
-        // Update the sensitivity value display
-        sensitivityInput.addEventListener('input', (e) => {
-            sensitivityValue.textContent = e.target.value;
-        });
-
-        compareButton.addEventListener('click', async () => {
-            const refFile = referenceImageInput.files[0];
-            const testFile = testImageInput.files[0];
-
-            if (!refFile || !testFile) {
-                showModal('Missing Images', 'Please upload both a reference and a test image to continue.');
-                return;
+                reader.readAsDataURL(file);
             }
+        }
 
-            // Hide the splash screen and previous results, show loading indicator
-            splashScreen.classList.add('hidden');
-            loadingIndicator.classList.remove('hidden');
-            resultsContainer.classList.add('hidden');
-            imageContainer.innerHTML = '';
-            summary.textContent = '';
+        // The core logic is now in this function, which is called only when OpenCV.js is ready.
+        function onOpenCvReady() {
+            loadingStatus.textContent = 'OpenCV.js loaded successfully. You can start scanning.';
 
-            try {
-                const sensitivityThreshold = parseInt(sensitivityInput.value, 10);
-                
-                // Read images as data URLs
-                const refDataUrl = await readFileAsDataURL(refFile);
-                const testDataUrl = await readFileAsDataURL(testFile);
+            // Scan button click handler
+            scanButton.addEventListener('click', () => {
+                const img1 = previewImageReference;
+                const img2 = previewImageTest;
 
-                // Load images into an HTMLImageElement
-                const refImage = await loadImage(refDataUrl);
-                const testImage = await loadImage(testDataUrl);
-
-                if (refImage.width !== testImage.width || refImage.height !== testImage.height) {
-                    showModal('Image Dimensions Mismatch', 'The reference and test images must have the same dimensions for comparison.');
-                    loadingIndicator.classList.add('hidden');
+                if (img1.src.includes('placehold') || img2.src.includes('placehold')) {
+                    // Use a custom message box instead of alert()
+                    const messageBox = document.createElement('div');
+                    messageBox.className = 'fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50';
+                    messageBox.innerHTML = `
+                        <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+                            <p class="text-lg font-semibold mb-4">Please upload both a reference and a test image.</p>
+                            <button onclick="this.parentNode.parentNode.remove()" class="bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">OK</button>
+                        </div>
+                    `;
+                    document.body.appendChild(messageBox);
                     return;
                 }
+
+                loadingStatus.textContent = 'Scanning... Please wait.';
+                loadingStatus.classList.remove('hidden');
+                resultsDisplay.innerHTML = '';
                 
-                // Create an off-screen canvas to get pixel data
-                const offscreenCanvas = document.createElement('canvas');
-                const offscreenCtx = offscreenCanvas.getContext('2d');
-                offscreenCanvas.width = refImage.width;
-                offscreenCanvas.height = refImage.height;
-
-                // Draw reference image and get pixel data
-                offscreenCtx.drawImage(refImage, 0, 0);
-                const refImageData = offscreenCtx.getImageData(0, 0, refImage.width, refImage.height);
-                
-                // Draw test image and get pixel data
-                offscreenCtx.drawImage(testImage, 0, 0);
-                const testImageData = offscreenCtx.getImageData(0, 0, testImage.width, testImage.height);
-
-                let totalDifferences = 0;
-                let foundDefects = [];
-                let visited = Array.from({ length: refImage.height }, () => Array(refImage.width).fill(false));
-
-                function isDifferent(x, y) {
-                    if (x < 0 || x >= refImage.width || y < 0 || y >= refImage.height) return false;
-                    const i = (y * refImage.width + x) * 4;
-                    const rRef = refImageData.data[i];
-                    const gRef = refImageData.data[i + 1];
-                    const bRef = refImageData.data[i + 2];
-                    const rTest = testImageData.data[i];
-                    const gTest = testImageData.data[i + 1];
-                    const bTest = testImageData.data[i + 2];
-                    const diff = Math.abs(rRef - rTest) + Math.abs(gRef - gTest) + Math.abs(bRef - bTest);
-                    return diff > sensitivityThreshold;
-                }
-                
-                for (let y = 0; y < refImage.height; y++) {
-                    for (let x = 0; x < refImage.width; x++) {
-                        if (isDifferent(x, y) && !visited[y][x]) {
-                            let minX = x, minY = y, maxX = x, maxY = y;
-                            const queue = [{ x, y }];
-                            visited[y][x] = true;
-
-                            while (queue.length > 0) {
-                                const { x: currentX, y: currentY } = queue.shift();
-                                totalDifferences++;
-
-                                minX = Math.min(minX, currentX);
-                                minY = Math.min(minY, currentY);
-                                maxX = Math.max(maxX, currentX);
-                                maxY = Math.max(maxY, currentY);
-
-                                const neighbors = [
-                                    { nx: currentX - 1, ny: currentY },
-                                    { nx: currentX + 1, ny: currentY },
-                                    { nx: currentX, ny: currentY - 1 },
-                                    { nx: currentX, ny: currentY + 1 },
-                                    // Diagonal neighbors
-                                    { nx: currentX - 1, ny: currentY - 1 },
-                                    { nx: currentX + 1, ny: currentY + 1 },
-                                    { nx: currentX - 1, ny: currentY + 1 },
-                                    { nx: currentX + 1, ny: currentY - 1 }
-                                ];
-
-                                neighbors.forEach(({ nx, ny }) => {
-                                    if (nx >= 0 && nx < refImage.width && ny >= 0 && ny < refImage.height && !visited[ny][nx] && isDifferent(nx, ny)) {
-                                        visited[ny][nx] = true;
-                                        queue.push({ x: nx, y: ny });
-                                    }
-                                });
-                            }
-                            // Store the bounding box for this isolated defect
-                            foundDefects.push({
-                                x: minX,
-                                y: minY,
-                                width: maxX - minX + 1,
-                                height: maxY - minY + 1
-                            });
-                        }
-                    }
-                }
-                
-                // Create a canvas for the test image to display it with the bounding boxes
-                const highlightedCanvas = document.createElement('canvas');
-                highlightedCanvas.width = testImage.width;
-                highlightedCanvas.height = testImage.height;
-                const highlightedCtx = highlightedCanvas.getContext('2d');
-                
-                // Draw the test image onto the canvas
-                highlightedCtx.drawImage(testImage, 0, 0);
-
-                // Draw a bounding box for each found defect
-                highlightedCtx.strokeStyle = 'red';
-                highlightedCtx.lineWidth = 2;
-                foundDefects.forEach(box => {
-                    highlightedCtx.strokeRect(box.x, box.y, box.width, box.height);
-                });
-
-                // Create a canvas for the reference image to display it
-                const canvasRef = document.createElement('canvas');
-                const ctxRef = canvasRef.getContext('2d');
-                canvasRef.width = refImage.width;
-                canvasRef.height = refImage.height;
-                ctxRef.drawImage(refImage, 0, 0);
-
-                // Set up the layout
-                const refWrapper = document.createElement('div');
-                refWrapper.className = 'w-full md:w-1/2 flex flex-col items-center gap-2';
-                const refHeading = document.createElement('h3');
-                refHeading.textContent = 'Reference Image';
-                refHeading.className = 'text-lg font-semibold text-gray-700';
-                refWrapper.appendChild(refHeading);
-                refWrapper.appendChild(canvasRef);
-                canvasRef.className = 'w-full rounded-lg shadow-md';
-                
-                const highlightedWrapper = document.createElement('div');
-                highlightedWrapper.className = 'w-full md:w-1/2 flex flex-col items-center gap-2';
-                const highlightedHeading = document.createElement('h3');
-                highlightedHeading.textContent = 'Test Image with Defect(s)';
-                highlightedHeading.className = 'text-lg font-semibold text-gray-700';
-                highlightedWrapper.appendChild(highlightedHeading);
-                highlightedWrapper.appendChild(highlightedCanvas);
-                highlightedCanvas.className = 'w-full rounded-lg shadow-md';
-
-                imageContainer.appendChild(refWrapper);
-                imageContainer.appendChild(highlightedWrapper);
-
-                // Calculate and display summary
-                const totalPixels = refImage.width * refImage.height;
-                const differencePercentage = (totalDifferences / totalPixels) * 100;
-                summary.innerHTML = `Found <span class="font-bold">${foundDefects.length}</span> defect(s) covering <span class="font-bold">${totalDifferences}</span> pixels (${differencePercentage.toFixed(2)}%)`;
-                
-                resultsContainer.classList.remove('hidden');
-
-            } catch (error) {
-                console.error(error);
-                showModal('Analysis Failed', 'An error occurred while processing the images. Please ensure they are valid image files.');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-            }
-        });
-
-        // Helper function to read a file and return a data URL
-        function readFileAsDataURL(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
+                scanImagesWithOpenCV(img1, img2);
             });
         }
 
-        // Helper function to load an image from a data URL
-        function loadImage(src) {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = () => resolve(img);
-                img.onerror = reject;
-                img.src = src;
-            });
+        function scanImagesWithOpenCV(img1, img2) {
+            let src1 = null;
+            let src2 = null;
+            let diff = null;
+            let gray = null;
+            let thresholded = null;
+
+            try {
+                // Create matrices from images
+                src1 = cv.imread(img1);
+                src2 = cv.imread(img2);
+
+                // Resize src2 to match src1 dimensions if they don't match
+                if (src1.rows !== src2.rows || src1.cols !== src2.cols) {
+                    let dsize = new cv.Size(src1.cols, src1.rows);
+                    cv.resize(src2, src2, dsize, 0, 0, cv.INTER_AREA);
+                }
+
+                // Compute the absolute difference
+                diff = new cv.Mat();
+                cv.absdiff(src1, src2, diff);
+
+                // Convert to grayscale
+                gray = new cv.Mat();
+                cv.cvtColor(diff, gray, cv.COLOR_BGR2GRAY);
+
+                // Apply a threshold to find differences
+                thresholded = new cv.Mat();
+                const thresholdValue = parseInt(similarityThresholdInput.value, 10);
+                cv.threshold(gray, thresholded, thresholdValue, 255, cv.THRESH_BINARY);
+
+                // Find contours of the defects
+                let contours = new cv.MatVector();
+                let hierarchy = new cv.Mat();
+                cv.findContours(thresholded, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+                // Draw contours on the original test image
+                const result = src2.clone();
+                for (let i = 0; i < contours.size(); ++i) {
+                    let color = new cv.Scalar(255, 0, 0, 255); // Red color for defects
+                    cv.drawContours(result, contours, i, color, 2, cv.LINE_8, hierarchy, 0);
+                }
+
+                // Display the result
+                const resultCanvas = document.createElement('canvas');
+                resultCanvas.className = 'w-full max-w-full h-auto rounded-lg shadow-md';
+                cv.imshow(resultCanvas, result);
+                resultsDisplay.innerHTML = '';
+                resultsDisplay.appendChild(resultCanvas);
+
+                loadingStatus.textContent = `Scan complete. Found ${contours.size()} potential defects.`;
+
+                // Clean up memory
+                src1.delete();
+                src2.delete();
+                diff.delete();
+                gray.delete();
+                thresholded.delete();
+                contours.delete();
+                hierarchy.delete();
+                result.delete();
+                
+            } catch (err) {
+                loadingStatus.textContent = 'An error occurred during scanning: ' + err.message;
+                console.error(err);
+            }
         }
     </script>
+
 </body>
 </html>
