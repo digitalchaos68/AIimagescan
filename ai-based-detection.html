@@ -1,3 +1,4 @@
+<!-- ai-based-detection.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,12 +98,12 @@
                 <div id="targetDropArea" class="drop-area border-gray-300 dark:border-gray-600 hover:border-blue-500">
                     <p class="text-gray-500 dark:text-gray-400">Drag & drop your image here, or</p>
                     <input type="file" id="imageUpload" accept="image/*" class="w-full text-sm text-gray-500 dark:text-gray-400
-                           file:mr-4 file:py-2 file:px-4
-                           file:rounded-full file:border-0
-                           file:text-sm file:font-semibold
-                           file:bg-blue-50 file:text-blue-700
-                           hover:file:bg-blue-100
-                           dark:file:bg-gray-700 dark:file:text-gray-200 dark:hover:file:bg-gray-600 cursor-pointer">
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100
+                            dark:file:bg-gray-700 dark:file:text-gray-200 dark:hover:file:bg-gray-600 cursor-pointer">
                 </div>
             </div>
 
@@ -112,12 +113,12 @@
                 <div id="referenceDropArea" class="drop-area border-gray-300 dark:border-gray-600 hover:border-blue-500">
                     <p class="text-gray-500 dark:text-gray-400">Drag & drop your reference image here, or</p>
                     <input type="file" id="referenceImageUpload" accept="image/*" class="w-full text-sm text-gray-500 dark:text-gray-400
-                           file:mr-4 file:py-2 file:px-4
-                           file:rounded-full file:border-0
-                           file:text-sm file:font-semibold
-                           file:bg-blue-50 file:text-blue-700
-                           hover:file:bg-blue-100
-                           dark:file:bg-gray-700 dark:file:text-gray-200 dark:hover:file:bg-gray-600 cursor-pointer">
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100
+                            dark:file:bg-gray-700 dark:file:text-gray-200 dark:hover:file:bg-gray-600 cursor-pointer">
                 </div>
             </div>
         </div>
@@ -206,6 +207,7 @@
         const changeBasedBtn = document.getElementById('changeBasedBtn');
         const referenceBasedBtn = document.getElementById('referenceBasedBtn');
         const referenceUploadSection = document.getElementById('referenceUploadSection');
+        const referencePreviewContainer = document.getElementById('referencePreviewContainer');
         const imageUpload = document.getElementById('imageUpload');
         const imagePreview = document.getElementById('imagePreview');
         const referenceImageUpload = document.getElementById('referenceImageUpload');
@@ -236,37 +238,68 @@
             scanBtn.disabled = false;
         }
 
-        // Event listener for mode selection buttons
-        changeBasedBtn.addEventListener('click', () => {
-            isReferenceBased = false;
-            referenceUploadSection.classList.add('hidden');
-            document.getElementById('referencePreviewContainer').classList.add('hidden');
-            changeBasedBtn.classList.add('bg-blue-500', 'text-white');
-            changeBasedBtn.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
-            referenceBasedBtn.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
-            referenceBasedBtn.classList.remove('bg-blue-500', 'text-white');
-        });
+        /**
+         * Sets the detection mode and updates the UI accordingly.
+         * @param {boolean} isRefBased - true for reference-based, false for change-based.
+         */
+        function setDetectionMode(isRefBased) {
+            isReferenceBased = isRefBased;
+            // Update UI for reference image upload section
+            if (isReferenceBased) {
+                referenceUploadSection.classList.remove('hidden');
+                referencePreviewContainer.classList.remove('hidden');
+                referenceBasedBtn.classList.add('bg-blue-500', 'text-white');
+                referenceBasedBtn.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
+                changeBasedBtn.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
+                changeBasedBtn.classList.remove('bg-blue-500', 'text-white');
+            } else {
+                referenceUploadSection.classList.add('hidden');
+                referencePreviewContainer.classList.add('hidden');
+                changeBasedBtn.classList.add('bg-blue-500', 'text-white');
+                changeBasedBtn.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
+                referenceBasedBtn.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
+                referenceBasedBtn.classList.remove('bg-blue-500', 'text-white');
+            }
+        }
+        
+        // Initial setup
+        setDetectionMode(false);
 
-        referenceBasedBtn.addEventListener('click', () => {
-            isReferenceBased = true;
-            referenceUploadSection.classList.remove('hidden');
-            document.getElementById('referencePreviewContainer').classList.remove('hidden');
-            referenceBasedBtn.classList.add('bg-blue-500', 'text-white');
-            referenceBasedBtn.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
-            changeBasedBtn.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
-            changeBasedBtn.classList.remove('bg-blue-500', 'text-white');
-        });
+        // Event listeners for mode selection buttons
+        changeBasedBtn.addEventListener('click', () => setDetectionMode(false));
+        referenceBasedBtn.addEventListener('click', () => setDetectionMode(true));
 
-        // Event listeners for drag-and-drop
+        /**
+         * Handles the files from a drag-and-drop or file input event.
+         * @param {FileList} files - The file list from the event.
+         * @param {HTMLElement} previewElement - The <img> element to show the preview.
+         * @param {string} imageVar - The name of the global variable to store the image data ('target' or 'reference').
+         */
+        function handleFiles(files, previewElement, imageVar) {
+            if (files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewElement.src = e.target.result;
+                    previewElement.classList.remove('hidden');
+                    if (imageVar === 'target') {
+                        imageToScan = e.target.result;
+                    } else if (imageVar === 'reference') {
+                        referenceImage = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Setup drop areas
         function setupDropArea(dropArea, fileInput, previewElement, imageVar) {
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, preventDefaults, false);
+                dropArea.addEventListener(eventName, e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, false);
             });
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
 
             ['dragenter', 'dragover'].forEach(eventName => {
                 dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
@@ -276,56 +309,24 @@
                 dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
             });
 
-            dropArea.addEventListener('drop', (e) => {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                handleFiles(files);
-            }, false);
-
-            fileInput.addEventListener('change', (e) => {
-                handleFiles(e.target.files);
-            });
-
-            function handleFiles(files) {
-                if (files.length > 0) {
-                    const file = files[0];
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        previewElement.src = e.target.result;
-                        previewElement.classList.remove('hidden');
-                        if (imageVar === 'target') {
-                            imageToScan = e.target.result;
-                        } else if (imageVar === 'reference') {
-                            referenceImage = e.target.result;
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                }
-            }
+            dropArea.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files, previewElement, imageVar), false);
+            fileInput.addEventListener('change', (e) => handleFiles(e.target.files, previewElement, imageVar));
         }
+        
         setupDropArea(targetDropArea, imageUpload, imagePreview, 'target');
         setupDropArea(referenceDropArea, referenceImageUpload, referenceImagePreview, 'reference');
 
         // Event listeners for parameter range sliders
-        sensitivityInput.addEventListener('input', () => {
-            sensitivityValue.textContent = sensitivityInput.value;
-        });
-        minRatioInput.addEventListener('input', () => {
-            minRatioValue.textContent = minRatioInput.value;
-        });
-        maxRatioInput.addEventListener('input', () => {
-            maxRatioValue.textContent = maxRatioInput.value;
-        });
+        sensitivityInput.addEventListener('input', () => sensitivityValue.textContent = sensitivityInput.value);
+        minRatioInput.addEventListener('input', () => minRatioValue.textContent = minRatioInput.value);
+        maxRatioInput.addEventListener('input', () => maxRatioValue.textContent = maxRatioInput.value);
         blurKernelInput.addEventListener('input', () => {
             const value = parseInt(blurKernelInput.value);
-            if (value % 2 === 0) {
-                blurKernelInput.value = value + 1;
-            }
+            // Ensure the blur kernel is always an odd number
+            blurKernelInput.value = value % 2 === 0 ? value + 1 : value;
             blurKernelValue.textContent = blurKernelInput.value;
         });
-        densityThresholdInput.addEventListener('input', () => {
-            densityThresholdValue.textContent = densityThresholdInput.value;
-        });
+        densityThresholdInput.addEventListener('input', () => densityThresholdValue.textContent = densityThresholdInput.value);
 
         // Main scan button listener
         scanBtn.addEventListener('click', () => {
@@ -347,7 +348,7 @@
             resultsDisplay.innerHTML = '';
             
             setTimeout(() => {
-                let src, ref, gray, refGray, diff, blur, binary, distMap, distMapNorm, thresholdedDensity, markers, contours, hierarchy, contoursFinal, hierarchyFinal;
+                let src, ref, gray, refGray, diff, binary, kernel, contours, hierarchy;
                 try {
                     const imgElement = document.getElementById('imagePreview');
                     src = cv.imread(imgElement);
@@ -379,7 +380,7 @@
                         cv.threshold(gray, binary, sensitivity * 2.55, 255, cv.THRESH_BINARY);
                     }
 
-                    let kernel = cv.Mat.ones(5, 5, cv.CV_8U);
+                    kernel = cv.Mat.ones(5, 5, cv.CV_8U);
                     cv.morphologyEx(binary, binary, cv.MORPH_OPEN, kernel);
                     cv.morphologyEx(binary, binary, cv.MORPH_CLOSE, kernel);
 
@@ -433,6 +434,7 @@
                     loadingStatus.textContent = 'An error occurred during scanning: ' + err.message;
                     console.error(err);
                 } finally {
+                    // Clean up allocated memory
                     if (src) src.delete();
                     if (ref) ref.delete();
                     if (gray) gray.delete();
